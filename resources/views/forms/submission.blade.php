@@ -1,0 +1,7 @@
+@extends('layouts.admin')
+@section('title', 'Response #'.$submission->id.' — BITS')
+@section('content')
+    @include('forms.partials.nav')
+    <div class="admin-page-heading"><div><p class="admin-eyebrow">THE COMPLETE PICTURE</p><h1>Response #{{ $submission->id }}</h1><p>{{ $submission->version->schema_json['title'] }} · Version {{ $submission->version->version_number }} · {{ $submission->submitted_at->utc()->format('M j, Y H:i') }} UTC</p></div><form method="POST" action="{{ route('forms.submissions.destroy', [$form,$submission]) }}" data-confirm="Permanently delete this response and its uploaded files? This cannot be undone.">@csrf @method('DELETE')<button class="admin-button fm-danger" type="submit">Delete response</button></form></div>
+    <section class="admin-card fm-response-detail"><dl>@foreach($submission->version->schema_json['fields'] as $field) @continue(in_array($field['type'], ['heading','description'])) @php($value = $submission->data[$field['field_key']] ?? null)<div><dt>{{ $field['label'] }}<small>{{ $field['field_key'] }}</small></dt><dd>@if(is_array($value) && ($value['kind'] ?? null) === 'file')<a class="fm-text-link" href="{{ route('forms.submissions.file', [$form,$submission,$field['field_key']]) }}">{{ $value['name'] }} ↓</a><small>{{ number_format($value['size']/1024, 1) }} KB · Private attachment</small>@else{{ $reports->display($value) }}@endif</dd></div>@endforeach</dl></section>
+@endsection

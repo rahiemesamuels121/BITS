@@ -1,3 +1,6 @@
+import './forms.js';
+import './admin-dashboard.js';
+
 const menuToggle = document.querySelector('[data-menu-toggle]');
 const navigation = document.querySelector('#site-navigation');
 

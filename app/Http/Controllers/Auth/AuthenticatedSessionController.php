@@ -27,6 +27,7 @@ class AuthenticatedSessionController extends Controller
         ]);
 
         $throttleKey = 'login:'.hash('sha256', Str::lower($credentials['email']).'|'.$request->ip());
+        $credentials['email'] = Str::lower($credentials['email']);
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             throw ValidationException::withMessages([
@@ -37,6 +38,7 @@ class AuthenticatedSessionController extends Controller
         if (! Auth::attempt([
             'email' => $credentials['email'],
             'password' => $credentials['password'],
+            'is_active' => true,
         ], $request->boolean('remember'))) {
             RateLimiter::hit($throttleKey, 60);
 
@@ -48,7 +50,7 @@ class AuthenticatedSessionController extends Controller
         RateLimiter::clear($throttleKey);
         $request->session()->regenerate();
 
-        return redirect()->intended(route('home'))->with('status', 'You are now signed in.');
+        return redirect()->intended(route('dashboard'))->with('status', 'You are now signed in.');
     }
 
     public function destroy(Request $request): RedirectResponse

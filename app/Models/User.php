@@ -7,6 +7,9 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -14,8 +17,31 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
+    protected $attributes = ['is_active' => true];
+
+    public function isAdmin(): bool
+    {
+        return $this->is_active && $this->role?->code === Role::ADMIN;
+    }
+
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
+
+    /** @return BelongsTo<Role, $this> */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function forms(): HasMany
+    {
+        return $this->hasMany(Form::class);
+    }
+
+    public function contracts(): HasMany
+    {
+        return $this->hasMany(Contract::class, 'client_id');
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -27,6 +53,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 }

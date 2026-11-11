@@ -4,11 +4,12 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <meta name="description" content="@yield('description', 'Access your Rebound client account.')">
+        <meta name="description" content="@yield('description', 'Access your BITS client account.')">
         <meta name="theme-color" content="#2b2876">
-        <title>@yield('title', 'Client Login — Rebound')</title>
+        <title>@yield('title', 'Client Login — BITS')</title>
         @fonts('instrument-sans')
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/bits-logo.svg') }}">
     </head>
     <body>
         <a class="skip-link" href="#main-content">Skip to content</a>

@@ -1,0 +1,24 @@
+@extends('layouts.admin')
+@section('title', 'Form Management — BITS')
+@section('content')
+    <div class="admin-page-heading"><div><p class="admin-eyebrow">BUILD. SHARE. UNDERSTAND.</p><h1>Form Management</h1><p>Turn the questions that matter into information you can use.</p></div><a class="admin-button admin-button-primary" href="{{ route('forms.create') }}">@include('partials.admin.icon', ['name' => 'plus']) Create New Form</a></div>
+    <div class="admin-stats fm-stats">
+        @foreach([['Total Forms', $stats['total']], ['Published Forms', $stats['published']], ['Total Submissions', $stats['submissions']], ['Recent Submissions', $stats['recent']]] as [$label, $value])
+            <article class="admin-stat"><div><span>{{ $label }}</span></div><strong>{{ number_format($value) }}</strong><p>{{ $label === 'Recent Submissions' ? 'In the last 7 days' : 'In your workspace' }}</p></article>
+        @endforeach
+    </div>
+    @if(session('published_url'))<div class="fm-share-banner"><span>Published link</span><input aria-label="Published form URL" readonly value="{{ session('published_url') }}"><button class="admin-button" type="button" data-copy-url="{{ session('published_url') }}">Copy Link</button><a class="admin-button" href="{{ session('published_url') }}" target="_blank" rel="noopener">Open Form ↗</a></div>@endif
+    <form class="fm-filters" method="GET" action="{{ route('forms.index') }}"><label>Search forms<input type="search" name="q" value="{{ request('q') }}" placeholder="Search by title or description"></label><label>Status<select name="status"><option value="">All statuses</option>@foreach(['draft', 'published', 'archived'] as $status)<option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>@endforeach</select></label><button class="admin-button" type="submit">Apply filters</button>@if(request()->hasAny(['q','status']))<a class="fm-text-link" href="{{ route('forms.index') }}">Clear</a>@endif</form>
+    <div class="fm-form-grid">
+        @forelse($forms as $form)
+            <article class="fm-form-card">
+                @if($form->contract)<p class="fm-muted">Contract: {{ $form->contract->name }}</p>@endif
+                <div class="fm-form-card-top"><span class="fm-form-icon">@include('partials.admin.icon', ['name' => 'ticket'])</span><span class="fm-status fm-status-{{ $form->status }}">{{ ucfirst($form->status) }}</span><details class="fm-actions-menu"><summary aria-label="Actions for {{ $form->title }}">•••</summary><div><a href="{{ route('forms.preview', $form) }}" target="_blank" rel="noopener">Preview</a><a href="{{ route('forms.settings', $form) }}">Settings</a><form action="{{ route('forms.duplicate', $form) }}" method="POST">@csrf<button type="submit">Duplicate form</button></form>@if($form->status === 'published')<form action="{{ route('forms.unpublish', $form) }}" method="POST" data-confirm="Unpublish this form? New responses will no longer be accepted.">@csrf<button type="submit">Unpublish</button></form>@else<form action="{{ route('forms.publish', $form) }}" method="POST">@csrf<input type="hidden" name="revision" value="{{ $form->revision }}"><button type="submit">Publish</button></form>@endif @if($form->status !== 'archived')<form action="{{ route('forms.archive', $form) }}" method="POST" data-confirm="Archive this form and stop accepting responses?">@csrf<button type="submit">Archive</button></form>@endif<form action="{{ route('forms.destroy', $form) }}" method="POST" data-confirm="Delete this form? Its public link will stop working. Historical records are retained privately.">@csrf @method('DELETE')<button class="fm-danger-text" type="submit">Delete form</button></form></div></details></div>
+                <h2><a href="{{ route('forms.edit', $form) }}">{{ $form->title }}</a></h2><p class="fm-card-description">{{ $form->description ?: 'Ready for your next great question.' }}</p><p class="fm-card-dates">Created {{ $form->created_at->format('M j, Y') }}<br>Updated {{ $form->updated_at->diffForHumans() }}</p><div class="fm-card-bottom"><a href="{{ route('forms.submissions.index', $form) }}"><strong>{{ number_format($form->submissions_count) }}</strong> submissions</a><a class="admin-button" href="{{ route('forms.edit', $form) }}">Edit form →</a></div>
+            </article>
+        @empty
+            <div class="fm-empty"><span class="fm-empty-icon">@include('partials.admin.icon', ['name' => 'ticket'])</span><h2>{{ request()->filled('q') || request()->filled('status') ? 'No forms match your filters.' : 'Your first form starts here.' }}</h2><p>Create a form, add your questions, and share a link to start collecting responses.</p><a class="admin-button admin-button-primary" href="{{ route('forms.create') }}">Create New Form</a></div>
+        @endforelse
+    </div>
+    @include('forms.partials.pagination', ['paginator' => $forms])
+@endsection

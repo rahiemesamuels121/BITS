@@ -1,11 +1,11 @@
 <div class="utility-bar">
     <span>Better flow. Better service.</span>
-    <a href="{{ url('/#get-started') }}">Explore Rebound <span aria-hidden="true">→</span></a>
+    <a href="{{ url('/#get-started') }}">Explore BITS <span aria-hidden="true">→</span></a>
 </div>
 <header class="top-nav">
-    <a class="brand" href="{{ url('/') }}" aria-label="Rebound home">
+    <a class="brand" href="{{ url('/') }}" aria-label="BITS home">
         @include('partials.brand-mark')
-        <span class="brand-name">Rebound<span class="brand-dot">.</span></span>
+        <span class="brand-name">BITS<span class="brand-dot">.</span></span>
     </a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" data-menu-toggle>
         <span class="sr-only">Toggle navigation</span>
@@ -17,5 +17,5 @@
         <a class="nav-item" href="{{ url('/#solutions') }}">Solutions</a>
         <a class="nav-item" href="{{ url('/#about') }}">About</a>
     </nav>
-    <a class="cta-button header-cta" href="{{ route('login') }}" @if(request()->routeIs('login')) aria-current="page" @endif>Client Login <span aria-hidden="true">↗</span></a>
+    <a class="cta-button header-cta" href="{{ route('login') }}">Client Login <span aria-hidden="true">↗</span></a>
 </header>

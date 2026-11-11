@@ -19,16 +19,16 @@ class AuthenticationTest extends TestCase
             ->assertSee('Client Login');
     }
 
-    public function test_existing_users_can_sign_in_and_return_home(): void
+    public function test_existing_users_can_sign_in_and_open_the_dashboard(): void
     {
         $user = User::factory()->create([
             'password' => Hash::make('correct-password'),
         ]);
 
         $this->post(route('login.store'), [
-            'email' => $user->email,
+            'email' => strtoupper($user->email),
             'password' => 'correct-password',
-        ])->assertRedirect(route('home'));
+        ])->assertRedirect(route('dashboard'));
 
         $this->assertAuthenticatedAs($user);
     }
@@ -39,11 +39,11 @@ class AuthenticationTest extends TestCase
             'password' => Hash::make('correct-password'),
         ]);
 
-        $this->withSession(['url.intended' => route('login')])
+        $this->withSession(['url.intended' => route('home')])
             ->post(route('login.store'), [
                 'email' => $user->email,
                 'password' => 'correct-password',
-            ])->assertRedirect(route('login'));
+            ])->assertRedirect(route('home'));
 
         $this->assertAuthenticatedAs($user);
     }
@@ -110,5 +110,26 @@ class AuthenticationTest extends TestCase
             ->assertSessionHas('_token');
 
         $this->assertGuest();
+    }
+
+    public function test_authenticated_users_are_redirected_away_from_the_login_page(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get(route('login'))
+            ->assertRedirect(route('dashboard'));
+    }
+
+    public function test_remember_me_sets_the_authentication_cookie(): void
+    {
+        $user = User::factory()->create(['password' => 'correct-password']);
+
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'correct-password',
+            'remember' => '1',
+        ])->assertRedirect(route('dashboard'))
+            ->assertCookie(auth()->guard('web')->getRecallerName());
+
+        $this->assertAuthenticatedAs($user);
     }
 }

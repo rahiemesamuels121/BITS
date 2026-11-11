@@ -1,6 +1,6 @@
-# Rebound hero image
+# BITS hero image
 
-Asset: `public/images/rebound-service-team.png`
+Asset: `public/images/bits-service-team.png`
 
 Generated with the built-in imagegen tool. The image is decorative and does not represent a named employee.
 

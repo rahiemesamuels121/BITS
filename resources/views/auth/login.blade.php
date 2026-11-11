@@ -1,7 +1,7 @@
 @extends('layouts.guest')
 
-@section('title', 'Client Login — Rebound')
-@section('description', 'Sign in to your Rebound client account.')
+@section('title', 'Client Login — BITS')
+@section('description', 'Sign in to your BITS client account.')
 
 @section('content')
     <section class="auth-card" aria-labelledby="login-title">
@@ -10,7 +10,7 @@
         </div>
 
         @auth
-            <p class="eyebrow">YOUR REBOUND ACCOUNT</p>
+            <p class="eyebrow">YOUR BITS ACCOUNT</p>
             <h1 id="login-title">You’re signed in.</h1>
             <p class="auth-description">Welcome back, {{ auth()->user()->name }}.</p>
 
@@ -27,7 +27,7 @@
         @else
             <p class="eyebrow">WELCOME BACK</p>
             <h1 id="login-title">Client Login<span class="brand-dot">.</span></h1>
-            <p class="auth-description">Sign in to your Rebound account.</p>
+            <p class="auth-description">Sign in to your BITS account.</p>
 
             @if ($errors->any())
                 <div class="auth-error-summary" role="alert">

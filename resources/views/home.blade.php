@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Rebound — Better flow. Better service.')
-@section('description', 'Discover a fresh approach to MSP service delivery. Explore a calmer, more connected service desk with Rebound.')
+@section('title', 'BITS — Better flow. Better service.')
+@section('description', 'Discover a fresh approach to MSP service delivery. Explore a calmer, more connected service desk with BITS.')
 
 @section('content')
     <section class="hero" aria-labelledby="hero-title">
-        <img class="hero-image" src="{{ asset('images/rebound-service-team.png') }}" alt="" fetchpriority="high">
+        <img class="hero-image" src="{{ asset('images/bits-service-team.png') }}" alt="" fetchpriority="high">
         <p class="eyebrow hero-eyebrow">
             <span class="status-dot"></span>
             A NEW RHYTHM FOR YOUR SERVICE DESK
@@ -40,14 +40,14 @@
     <section class="platform-section" id="platform" aria-labelledby="platform-title">
         <div class="platform-preview">
             <div class="preview-topline">
-                <span><span class="status-dot"></span> THE REBOUND EXPERIENCE</span>
+                <span><span class="status-dot"></span> THE BITS EXPERIENCE</span>
                 <span class="preview-label">ILLUSTRATIVE WORKFLOW <span aria-hidden="true">↗</span></span>
             </div>
             <div class="preview-stage">
                 <div class="preview-copy">
                     <div class="preview-brand">
                         @include('partials.brand-mark')
-                        <span>Rebound<span class="brand-dot">.</span></span>
+                        <span>BITS<span class="brand-dot">.</span></span>
                     </div>
                     <h2 id="platform-title">A little less friction.<br>A lot more flow.</h2>
                     <p>Your next great service experience<br>starts with a clearer view.</p>
@@ -61,7 +61,7 @@
                 <div class="dashboard-visual" role="img" aria-label="Example service desk showing 12 open requests, 4 in progress, and 8 resolved today">
                     <div class="dashboard-toolbar">
                         <div class="window-dots"><i></i><i></i><i></i></div>
-                        <span>Rebound / Workspace</span>
+                        <span>BITS / Workspace</span>
                         <span class="avatar">JD</span>
                     </div>
                     <div class="dashboard-body">
@@ -184,7 +184,7 @@
             <p class="eyebrow">A LITTLE MORE HUMAN</p>
             <h2 id="about-title">Behind every ticket,<br>there’s a person.</h2>
             <p>A teammate trying to get started. A customer who needs a hand. An engineer making it happen.</p>
-            <p>Rebound is a service desk concept shaped around those moments. Because better workflows should mean better days for the people using them.</p>
+            <p>BITS is a service desk concept shaped around those moments. Because better workflows should mean better days for the people using them.</p>
             <a class="text-link" href="#get-started">Find your next step <span aria-hidden="true">↗</span></a>
         </div>
     </section>
@@ -195,7 +195,7 @@
         <h2 id="get-started-title">Make space for<br><span>better service.</span></h2>
         <p>Take a closer look at what a calmer service desk could feel like.</p>
         <button class="button button-primary" type="button" data-open-tour>
-            Explore the Rebound experience <span class="button-arrow" aria-hidden="true">↗</span>
+            Explore the BITS experience <span class="button-arrow" aria-hidden="true">↗</span>
         </button>
     </section>
 @endsection
@@ -203,7 +203,7 @@
 @push('dialogs')
     <dialog class="tour-dialog" id="platform-tour" aria-labelledby="tour-title">
         <div class="dialog-heading">
-            <span class="eyebrow">THE REBOUND EXPERIENCE</span>
+            <span class="eyebrow">THE BITS EXPERIENCE</span>
             <button class="dialog-close" type="button" data-close-dialog aria-label="Close product tour">×</button>
         </div>
         <h2 id="tour-title">From request to resolution.</h2>
