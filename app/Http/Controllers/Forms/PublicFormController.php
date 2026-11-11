@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Forms;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Forms\PublicSubmissionRequest;
 use App\Models\Form;
+use App\Services\Forms\FormOptionSourceService;
 use App\Services\Forms\FormSubmissionService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class PublicFormController extends Controller
 {
-    public function show(Request $request, string $slug, FormSubmissionService $service)
+    public function show(Request $request, string $slug, FormSubmissionService $service, FormOptionSourceService $optionSources)
     {
         $form = Form::query()->where('slug', $slug)->first();
         if ($form && (int) session('form_confirmation.form_id') === (int) $form->id) {
@@ -24,7 +25,18 @@ class PublicFormController extends Controller
             return redirect()->guest(route('login'));
         }
 
-        return view('forms.public', ['form' => $form, 'version' => $form->publishedVersion, 'schema' => $form->publishedVersion->schema_json, 'settings' => $form->publishedVersion->settings_json]);
+        $schema = $form->publishedVersion->schema_json;
+        foreach ($schema['fields'] as &$field) {
+            if (! empty($field['option_source'])) {
+                $choices = $optionSources->choices($field['option_source'], 'fields.'.$field['field_key'].'.option_source');
+                $field['options'] = $choices['options'];
+                $field['option_labels'] = (array) $choices['option_labels'];
+                unset($field['option_source']);
+            }
+        }
+        unset($field);
+
+        return view('forms.public', ['form' => $form, 'version' => $form->publishedVersion, 'schema' => $schema, 'settings' => $form->publishedVersion->settings_json]);
     }
 
     public function submit(PublicSubmissionRequest $request, string $slug, FormSubmissionService $service)

@@ -20,7 +20,6 @@ class ContractFactory extends Factory
         return [
             'name' => fake()->sentence(3),
             'description' => null,
-            'client_id' => null,
             'form_id' => null,
         ];
     }

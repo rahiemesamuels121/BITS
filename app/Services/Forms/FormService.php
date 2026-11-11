@@ -42,7 +42,7 @@ class FormService
             $copy->draft_settings = $source->draft_settings;
             $copy->save();
             foreach ($source->fields as $field) {
-                $copy->fields()->create($field->only(['field_key', 'label', 'type', 'placeholder', 'help_text', 'required', 'options', 'validation_rules', 'conditional_rules', 'default_value', 'sort_order']));
+                $copy->fields()->create($field->only(['field_key', 'label', 'type', 'placeholder', 'help_text', 'required', 'options', 'option_labels', 'option_source', 'validation_rules', 'conditional_rules', 'default_value', 'sort_order']));
             }
 
             return $copy;

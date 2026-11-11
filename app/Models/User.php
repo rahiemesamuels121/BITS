@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -24,6 +25,11 @@ class User extends Authenticatable
         return $this->is_active && $this->role?->code === Role::ADMIN;
     }
 
+    public function usesClientDashboard(): bool
+    {
+        return ! in_array($this->role?->code, [Role::ADMIN, Role::STAFF], true);
+    }
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
 
@@ -38,9 +44,10 @@ class User extends Authenticatable
         return $this->hasMany(Form::class);
     }
 
-    public function contracts(): HasMany
+    public function contracts(): BelongsToMany
     {
-        return $this->hasMany(Contract::class, 'client_id');
+        return $this->belongsToMany(Contract::class)->using(ContractAssignment::class)
+            ->withPivot(['uses_contract_duration', 'starts_at', 'ends_at']);
     }
 
     /**

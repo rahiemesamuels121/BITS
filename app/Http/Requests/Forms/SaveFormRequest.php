@@ -21,7 +21,7 @@ class SaveFormRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:10000'],
             'revision' => ['required', 'integer', 'min:0'],
             'fields' => ['present', 'array', 'max:200'],
-            'fields.*' => ['array:field_key,label,type,placeholder,help_text,required,options,validation_rules,conditional_rules,default_value'],
+            'fields.*' => ['array:field_key,label,type,placeholder,help_text,required,options,option_labels,option_source,validation_rules,conditional_rules,default_value'],
             'fields.*.field_key' => ['required', 'string', 'regex:/^[a-z][a-z0-9_]{0,63}$/', 'distinct'],
             'fields.*.label' => ['required', 'string', 'max:255'],
             'fields.*.type' => ['required', Rule::in(FormSchemaService::TYPES)],
@@ -30,6 +30,20 @@ class SaveFormRequest extends FormRequest
             'fields.*.required' => ['required', 'boolean'],
             'fields.*.options' => ['nullable', 'array', 'max:100'],
             'fields.*.options.*' => ['required', 'string', 'max:200'],
+            'fields.*.option_labels' => ['nullable', 'array', 'max:100'],
+            'fields.*.option_labels.*' => ['required', 'string', 'max:200'],
+            'fields.*.option_source' => ['nullable', 'array:source,column,filters', function ($attribute, $value, $fail) {
+                if ($value !== null && ! $this->user()?->isAdmin()) {
+                    $fail('Only administrators can configure live database options.');
+                }
+            }],
+            'fields.*.option_source.source' => ['required_with:fields.*.option_source', Rule::in(array_keys(config('form-option-sources', [])))],
+            'fields.*.option_source.column' => ['required_with:fields.*.option_source', 'string'],
+            'fields.*.option_source.filters' => ['nullable', 'array', 'max:5'],
+            'fields.*.option_source.filters.*' => ['array:column,operator,value'],
+            'fields.*.option_source.filters.*.column' => ['required', 'string'],
+            'fields.*.option_source.filters.*.operator' => ['required', Rule::in(['equals', 'not_equals', 'contains', 'greater_than', 'greater_or_equal', 'less_than', 'less_or_equal'])],
+            'fields.*.option_source.filters.*.value' => ['required', 'string', 'max:200'],
             'fields.*.default_value' => ['nullable'],
             'fields.*.validation_rules' => ['nullable', 'array:min,max,min_length,max_length,allowed_types,max_size,message'],
             'fields.*.validation_rules.min' => ['nullable', 'numeric', 'between:-1000000000000000,1000000000000000'],
@@ -48,7 +62,7 @@ class SaveFormRequest extends FormRequest
                     $fail('Use a short text, number, or boolean condition value.');
                 }
             }],
-            'settings' => ['required', 'array:confirmation_message,submit_text,active,allow_anonymous,require_authentication,accept_responses,deadline,max_submissions,one_per_user,show_title,accent,logo_url,spacing,layout'],
+            'settings' => ['required', 'array:confirmation_message,submit_text,active,allow_anonymous,require_authentication,accept_responses,deadline,max_submissions,one_per_user,show_title,accent,logo_url,spacing,layout,client_reference_field'],
             'settings.confirmation_message' => ['required', 'string', 'max:2000'],
             'settings.submit_text' => ['required', 'string', 'max:80'],
             'settings.active' => ['required', 'boolean'],
@@ -62,6 +76,7 @@ class SaveFormRequest extends FormRequest
             'settings.accent' => ['required', Rule::in(['indigo', 'lime', 'blue'])],
             'settings.logo_url' => ['nullable', 'url:https', 'max:1000'],
             'settings.spacing' => ['required', Rule::in(['compact', 'comfortable'])],
+            'settings.client_reference_field' => ['nullable', 'string', 'regex:/^[a-z][a-z0-9_]{0,63}$/'],
             'settings.layout' => ['required', Rule::in(['single', 'two_column'])],
         ];
     }

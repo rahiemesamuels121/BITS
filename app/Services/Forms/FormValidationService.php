@@ -10,7 +10,7 @@ use Illuminate\Validation\ValidationException;
 
 class FormValidationService
 {
-    public function __construct(private FormConditionService $conditions) {}
+    public function __construct(private FormConditionService $conditions, private FormOptionSourceService $optionSources) {}
 
     public function validate(array $schema, array $answers): array
     {
@@ -40,7 +40,8 @@ class FormValidationService
                 'date' => ['date_format:Y-m-d'],
                 'time' => ['date_format:H:i'],
                 'boolean' => ['boolean'],
-                'select', 'radio' => ['string', Rule::in($options)],
+                'select' => ($field['option_source'] ?? null) ? ['string'] : ['string', Rule::in($options)],
+                'radio' => ['string', Rule::in($options)],
                 'checkboxes' => ['array', 'max:100'],
                 'file' => [File::types(($rules['allowed_types'] ?? []) ?: ['pdf', 'jpg', 'png'])->max($rules['max_size'] ?? 2048)],
                 default => ['string', 'min:'.($rules['min_length'] ?? 0), 'max:'.($rules['max_length'] ?? ($type === 'textarea' ? 10000 : 1000))],
@@ -56,6 +57,9 @@ class FormValidationService
             Validator::make(['answers' => [$key => $value]], $validation, $messages, ["answers.$key" => $field['label']])->validate();
             if ($value === null || $value === '' || $value === []) {
                 continue;
+            }
+            if ($type === 'select' && ($field['option_source'] ?? null) && ! $this->optionSources->contains($field['option_source'], $value)) {
+                throw ValidationException::withMessages(["answers.$key" => 'Choose an option that is currently available.']);
             }
             if ($type === 'file') {
                 $allowed = ($rules['allowed_types'] ?? []) ?: ['pdf', 'jpg', 'png'];

@@ -1,4 +1,6 @@
+import { tableOptionImporter } from './table-option-importer.js';
 ﻿import { buildPreview, element as el } from './form-renderer.js';
+import { hidePageLoading, showPageLoading } from './page-loading.js';
 
 const root = document.querySelector('[data-form-builder]');
 if (root) initialiseBuilder(root);
@@ -61,7 +63,14 @@ function initialiseBuilder(root) {
         }
         return data;
     };
-    const setBusy = value => { busy = value; saveButton.disabled = value; publishButton.disabled = value; saveButton.textContent = value ? 'Saving…' : 'Save Draft'; };
+    const setBusy = (value, message = 'Saving your form…') => {
+        busy = value;
+        saveButton.disabled = value;
+        publishButton.disabled = value;
+        saveButton.textContent = value ? 'Saving…' : 'Save Draft';
+        if (value) showPageLoading(message);
+        else hidePageLoading();
+    };
     const save = async () => {
         if (busy) return false;
         errors.hidden = true;
@@ -108,7 +117,8 @@ function initialiseBuilder(root) {
             const label = el('h3','',field.label || 'Untitled question'); if (field.required && !presentation.includes(field.type)) label.append(el('span','','*')); card.append(label);
             if (choiceTypes.includes(field.type) || field.type === 'boolean') {
                 const options = field.type === 'boolean' ? ['Yes','No'] : field.options ?? [];
-                options.forEach(option => card.append(el('div','fb-option-preview',`${field.type === 'checkboxes' ? '□' : '○'}  ${option}`)));
+                if (field.type === 'select' && field.option_source) card.append(el('div','fb-option-preview','Live database options'));
+                options.forEach(option => card.append(el('div','fb-option-preview',`${field.type === 'checkboxes' ? '□' : '○'}  ${field.option_labels?.[option] ?? option}`)));
             } else if (!presentation.includes(field.type)) card.append(el('div',`fb-control-preview${field.type === 'textarea' ? ' is-paragraph' : ''}`, field.type === 'file' ? '↑ Choose a file' : field.placeholder || (field.type === 'date' ? 'mm/dd/yyyy' : field.type === 'time' ? '--:--' : 'Your answer…')));
             if (field.help_text) card.append(el('p','fb-card-help',field.help_text));
             if (field.conditional_rules) card.append(el('span','fb-conditional-label','Conditional visibility'));
@@ -147,52 +157,106 @@ function initialiseBuilder(root) {
         if (['text','textarea','number','email','phone','select'].includes(field.type)) input('Placeholder','text',field.placeholder,value => field.placeholder = value || null,{maxLength:255});
         input('Help Text','textarea',field.help_text,value => field.help_text = value || null,{maxLength:2000});
         if (!presentation.includes(field.type)) toggle('Required question',field.required,value => field.required = value);
+        if (field.type === 'select' && (!field.option_source || field.option_source.source === 'users')) {
+            toggle('Link responses to the selected client', state.settings.client_reference_field === field.field_key, enabled => {
+                state.settings.client_reference_field = enabled ? field.field_key : null;
+                if (enabled) field.required = false;
+                renderProperties();
+            });
+            panel.append(el('p','fb-property-note','Use account IDs as option values. A selected client sees the response only through their assigned contract. Respondents can remain anonymous.'));
+        }
         if (choiceTypes.includes(field.type)) {
             panel.append(el('h3','','Answer options'));
-            const options = el('div','fb-options-list');
-            (field.options ?? []).forEach((option,position) => {
-                const row = el('div','fb-option-editor'); const control = el('input'); control.type = 'text'; control.value = option; control.maxLength = 200; control.setAttribute('aria-label',`Answer option ${position+1}`);
-                control.addEventListener('input', () => {
-                    const previous = field.options[position]; field.options[position] = control.value;
-                    state.fields.forEach(dependent => { if (dependent.conditional_rules?.field === field.field_key && dependent.conditional_rules.value === previous) dependent.conditional_rules.value = control.value; });
-                    if (Array.isArray(field.default_value)) field.default_value = field.default_value.map(value => value === previous ? control.value : value);
-                    else if (field.default_value === previous) field.default_value = control.value;
+            if (field.type === 'select' && Object.keys(initial.option_sources ?? {}).length) {
+                panel.append(tableOptionImporter(initial.option_sources, initial.option_sources_url, (options, labels) => {
+                    field.option_source = null;
+                    field.options = options;
+                    field.option_labels = labels;
+                    field.default_value = null;
                     changed();
+                    renderCanvas();
+                    renderProperties();
+                }, optionSource => {
+                    field.option_source = optionSource;
+                    field.options = [];
+                    field.option_labels = {};
+                    field.default_value = null;
+                    changed();
+                    renderCanvas();
+                    renderProperties();
+                }, field.option_source));
+            }
+
+            const options = el('div','fb-options-list');
+            if (field.option_source) {
+                panel.append(el('p','fb-property-note','Current matching database records appear whenever the public form is opened. Up to 100 options are supported; use filters to narrow larger lists.'));
+                const manual = el('button','admin-button','Switch to manual options'); manual.type = 'button';
+                manual.addEventListener('click', () => {
+                    field.option_source = null;
+                    field.options = ['Option 1','Option 2'];
+                    field.option_labels = {};
+                    changed();
+                    renderProperties();
                 });
-                control.addEventListener('change', () => {
-                    const defaults = panel.querySelector('[data-default-options]');
-                    if (!defaults) return;
-                    defaults.replaceChildren();
-                    const choices = field.options.map(value => [value,value]);
-                    if (field.type !== 'checkboxes') choices.unshift(['','No default']);
-                    choices.forEach(([value,text]) => {
-                        const option = el('option','',text); option.value = value;
-                        option.selected = Array.isArray(field.default_value) ? field.default_value.includes(value) : String(field.default_value ?? '') === value;
-                        defaults.append(option);
+                panel.append(manual);
+            } else {
+                (field.options ?? []).forEach((option,position) => {
+                    const row = el('div','fb-option-editor'); const control = el('input'); control.type = 'text'; control.value = option; control.maxLength = 200; control.setAttribute('aria-label',`Answer option ${position+1}`);
+                    control.addEventListener('input', () => {
+                        const previous = field.options[position]; field.options[position] = control.value;
+                        state.fields.forEach(dependent => { if (dependent.conditional_rules?.field === field.field_key && dependent.conditional_rules.value === previous) dependent.conditional_rules.value = control.value; });
+                        if (Array.isArray(field.default_value)) field.default_value = field.default_value.map(value => value === previous ? control.value : value);
+                        else if (field.default_value === previous) field.default_value = control.value;
+                        changed();
                     });
-                });
-                row.append(control);
-                [['up','↑'],['down','↓'],['remove','×']].forEach(([action,text]) => {
-                    const button = el('button','',text); button.type = 'button'; button.setAttribute('aria-label',`${action} option ${position+1}`);
-                    button.disabled = action === 'up' && !position || action === 'down' && position === field.options.length - 1;
-                    button.addEventListener('click', () => {
-                        if (action === 'remove') {
-                            const [removed] = field.options.splice(position,1);
-                            if (Array.isArray(field.default_value)) field.default_value = field.default_value.filter(value => value !== removed);
-                            else if (field.default_value === removed) field.default_value = null;
-                        } else { const destination = position + (action === 'up' ? -1 : 1); [field.options[position],field.options[destination]] = [field.options[destination],field.options[position]]; }
-                        changed(); renderProperties();
-                    }); row.append(button);
-                }); options.append(row);
-            }); panel.append(options);
-            const add = el('button','admin-button','+ Add option'); add.type = 'button'; add.disabled = field.options.length >= 100;
-            add.addEventListener('click', () => { let n = field.options.length+1; while(field.options.includes(`Option ${n}`)) n++; field.options.push(`Option ${n}`); changed(); renderProperties(); }); panel.append(add);
+                    control.addEventListener('change', () => {
+                        const defaults = panel.querySelector('[data-default-options]');
+                        if (!defaults) return;
+                        defaults.replaceChildren();
+                        const choices = field.options.map(value => [value,field.option_labels?.[value] ?? value]);
+                        if (field.type !== 'checkboxes') choices.unshift(['','No default']);
+                        choices.forEach(([value,text]) => {
+                            const option = el('option','',text); option.value = value;
+                            option.selected = Array.isArray(field.default_value) ? field.default_value.includes(value) : String(field.default_value ?? '') === value;
+                            defaults.append(option);
+                        });
+                    });
+                    if (field.option_labels && Object.hasOwn(field.option_labels, option)) {
+                        control.readOnly = true;
+                        control.setAttribute('aria-label', `Submitted ID ${option}`);
+                        const label = el('input'); label.type = 'text'; label.value = field.option_labels[option]; label.maxLength = 200;
+                        label.setAttribute('aria-label', `Display label for ID ${option}`);
+                        label.addEventListener('input', () => { field.option_labels[option] = label.value; changed(); });
+                        row.append(label);
+                    }
+                    row.append(control);
+                    [['up','↑'],['down','↓'],['remove','×']].forEach(([action,text]) => {
+                        const button = el('button','',text); button.type = 'button'; button.setAttribute('aria-label',`${action} option ${position+1}`);
+                        button.disabled = action === 'up' && !position || action === 'down' && position === field.options.length - 1;
+                        button.addEventListener('click', () => {
+                            if (action === 'remove') {
+                                const [removed] = field.options.splice(position,1);
+                                if (field.option_labels) delete field.option_labels[removed];
+                                if (Array.isArray(field.default_value)) field.default_value = field.default_value.filter(value => value !== removed);
+                                else if (field.default_value === removed) field.default_value = null;
+                            } else { const destination = position + (action === 'up' ? -1 : 1); [field.options[position],field.options[destination]] = [field.options[destination],field.options[position]]; }
+                            changed(); renderProperties();
+                        }); row.append(button);
+                    }); options.append(row);
+                }); panel.append(options);
+                const add = el('button','admin-button','+ Add option'); add.type = 'button'; add.disabled = field.options.length >= 100;
+                add.addEventListener('click', () => { let n = field.options.length+1; while(field.options.includes(`Option ${n}`)) n++; field.options.push(`Option ${n}`); changed(); renderProperties(); }); panel.append(add);
+            }
         }
         if (!presentation.includes(field.type) && field.type !== 'file') {
             if (choiceTypes.includes(field.type)) {
-                const choices = (field.options ?? []).map(option => [option,option]);
-                if (field.type !== 'checkboxes') choices.unshift(['','No default']);
-                select('Default Value', choices, field.default_value, value => field.default_value = value === '' ? null : value, field.type === 'checkboxes').dataset.defaultOptions = '';
+                if (field.type === 'select' && field.option_source) {
+                    panel.append(el('p','fb-property-note','Default selections are unavailable for live database dropdowns.'));
+                } else {
+                    const choices = (field.options ?? []).map(option => [option,field.option_labels?.[option] ?? option]);
+                    if (field.type !== 'checkboxes') choices.unshift(['','No default']);
+                    select('Default Value', choices, field.default_value, value => field.default_value = value === '' ? null : value, field.type === 'checkboxes').dataset.defaultOptions = '';
+                }
             } else if (field.type === 'boolean') select('Default Value',[['','No default'],['1','Yes'],['0','No']],field.default_value === true ? '1' : field.default_value === false ? '0' : '',value => field.default_value = value === '' ? null : value === '1');
             else input('Default Value', ['number','date','time'].includes(field.type) ? field.type : 'text',field.default_value,value => field.default_value = value === '' ? null : field.type === 'number' ? Number(value) : value);
         }
@@ -228,7 +292,8 @@ function initialiseBuilder(root) {
             if (source && ['text','textarea','email','phone','checkboxes'].includes(source.type)) operators.push(['contains','Contains']);
             select('Operation',operators,rule.operator,value => rule.operator = value);
             if (source?.type === 'boolean') select('Answer value',[['','Select answer'],['1','Yes'],['0','No']],String(rule.value),value => rule.value = value);
-            else if (source && choiceTypes.includes(source.type)) select('Answer value',[['','Select answer'],...(source.options ?? []).map(value => [value,value])],rule.value,value => rule.value = value);
+            else if (source?.type === 'select' && source.option_source) input('Answer value','text',rule.value,value => rule.value = value,{maxLength:1000});
+            else if (source && choiceTypes.includes(source.type)) select('Answer value',[['','Select answer'],...(source.options ?? []).map(value => [value,source.option_labels?.[value] ?? value])],rule.value,value => rule.value = value);
             else input('Answer value',source?.type === 'number' ? 'number' : 'text',rule.value,value => rule.value = value,{maxLength:1000});
         }
         panel.append(el('h3','','Stable field key'),el('code','',field.field_key),el('p','fb-property-note','This key stays with the question across published versions. Duplicating a question creates a new key.'));
@@ -290,12 +355,22 @@ function initialiseBuilder(root) {
     document.addEventListener('dragend', () => canvas.querySelectorAll('.is-dragging,.is-drop-target').forEach(card => card.classList.remove('is-dragging','is-drop-target')));
 
     const syncSettings = () => {
+        const clientReference = settingsDialog.querySelector('[data-setting="client_reference_field"]');
+        clientReference.replaceChildren();
+        const none = el('option','','None — do not link responses to clients'); none.value = ''; clientReference.append(none);
+        state.fields.filter(field => field.type === 'select' && (!field.option_source || field.option_source.source === 'users')).forEach(field => {
+            const option = el('option','',`${field.label || 'Untitled question'} (${field.field_key})`); option.value = field.field_key; clientReference.append(option);
+        });
+        const currentReference = state.settings.client_reference_field;
+        if (currentReference && ![...clientReference.options].some(option => option.value === currentReference)) {
+            const missing = el('option','',`Unavailable question (${currentReference}) — choose another or None`); missing.value = currentReference; clientReference.append(missing);
+        }
         settingsDialog.querySelectorAll('[data-setting]').forEach(input => { const value = state.settings[input.dataset.setting]; if (input.type === 'checkbox') input.checked = !!value; else input.value = input.type === 'datetime-local' ? (value ?? '').slice(0,16) : value ?? ''; });
         settingsDialog.querySelectorAll('[data-meta-setting]').forEach(input => { input.value = state[input.dataset.metaSetting] ?? ''; });
     };
     settingsDialog.querySelectorAll('[data-setting]').forEach(input => input.addEventListener('input', () => {
         const name = input.dataset.setting;
-        state.settings[name] = input.type === 'checkbox' ? input.checked : input.type === 'number' ? (input.value === '' ? null : Number(input.value)) : input.type === 'datetime-local' ? (input.value ? input.value + ':00Z' : null) : input.value || (['logo_url'].includes(name) ? null : '');
+        state.settings[name] = input.type === 'checkbox' ? input.checked : input.type === 'number' ? (input.value === '' ? null : Number(input.value)) : input.type === 'datetime-local' ? (input.value ? input.value + ':00Z' : null) : input.value || (['logo_url', 'client_reference_field'].includes(name) ? null : '');
         if (name === 'require_authentication' && input.checked) { state.settings.allow_anonymous = false; settingsDialog.querySelector('[data-setting="allow_anonymous"]').checked = false; }
         if (name === 'allow_anonymous' && input.checked) { state.settings.require_authentication = false; settingsDialog.querySelector('[data-setting="require_authentication"]').checked = false; }
         markChanged();
@@ -307,7 +382,7 @@ function initialiseBuilder(root) {
     publishButton.addEventListener('click', async () => {
         if (!await save()) return;
         if (dirty()) { showError(new Error('Your draft changed while saving. Save again before publishing.')); return; }
-        setBusy(true); publishButton.textContent = 'Publishing…';
+        setBusy(true, 'Publishing your form…'); publishButton.textContent = 'Publishing…';
         try {
             const result = await api(initial.publish_url,'POST',{revision:state.revision});
             const status = publishedDialog.querySelector('[data-published-status]'); status.textContent = `Publication status: Published · Version ${result.version}. Response settings and limits apply.`;

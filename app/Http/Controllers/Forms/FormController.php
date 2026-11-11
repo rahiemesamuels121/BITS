@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Forms\CreateFormRequest;
 use App\Models\Form;
 use App\Models\FormSubmission;
+use App\Services\Forms\FormOptionSourceService;
 use App\Services\Forms\FormSchemaService;
 use App\Services\Forms\FormService;
 use Illuminate\Http\Request;
@@ -48,11 +49,11 @@ class FormController extends Controller
         return to_route('forms.edit', $form)->with('status', 'Form created. Add your first question.');
     }
 
-    public function edit(Form $form, FormSchemaService $schemas)
+    public function edit(Form $form, FormSchemaService $schemas, FormOptionSourceService $optionSources)
     {
         Gate::authorize('update', $form);
 
-        return view('forms.builder', ['form' => $form, 'definition' => $schemas->definition($form), 'settings' => $schemas->settings($form->draft_settings ?? [])]);
+        return view('forms.builder', ['form' => $form, 'definition' => $schemas->definition($form), 'settings' => $schemas->settings($form->draft_settings ?? []), 'optionSources' => auth()->user()->isAdmin() ? $optionSources->catalog() : []]);
     }
 
     public function duplicate(Request $request, Form $form, FormService $service)

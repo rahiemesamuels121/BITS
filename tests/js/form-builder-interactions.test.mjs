@@ -57,14 +57,25 @@ test('the actual Blade builder can add and configure a question', async () => {
         assert.equal(document.querySelector('#fb-settings').open, true);
         document.querySelector('#fb-settings [data-fb-close]').click();
         let saved;
+        let completeSave;
         globalThis.fetch = async (_url, options) => {
             assert.equal(options.method, 'PUT');
             saved = JSON.parse(options.body);
-            return new Response(JSON.stringify({revision:1,status:'draft'}), {status:200, headers:{'Content-Type':'application/json'}});
+            return new Promise(resolve => { completeSave = resolve; });
         };
         root.querySelector('[data-builder-save]').click();
         await new Promise(setImmediate);
+        const loading = document.querySelector('.page-loading');
+        assert.equal(loading.hidden, false);
+        assert.equal(document.querySelector('.admin-layout').inert, true);
+        assert.equal(document.body.getAttribute('aria-busy'), 'true');
+        completeSave(new Response(JSON.stringify({revision:1,status:'draft'}), {status:200, headers:{'Content-Type':'application/json'}}));
+        await new Promise(setImmediate);
+        await new Promise(setImmediate);
         assert.deepEqual(errors, []);
+        assert.equal(loading.hidden, true);
+        assert.equal(document.querySelector('.admin-layout').inert, false);
+        assert.equal(document.body.hasAttribute('aria-busy'), false);
         assert.equal(saved.fields.length, questionCount);
         assert.equal(saved.fields[0].label, 'Full Name');
         assert.equal(root.querySelector('[data-save-state]').classList.contains('is-dirty'), false);

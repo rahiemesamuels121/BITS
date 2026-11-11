@@ -9,7 +9,8 @@
             @csrf @method('PUT')
             <label>Client name<input name="name" value="{{ old('name', $client->name) }}" required maxlength="255" autocomplete="name"></label>
             <label>Email address<input type="email" name="email" value="{{ old('email', $client->email) }}" required maxlength="254" autocomplete="off"></label>
-            <label>New password (optional)<input type="password" name="password" minlength="12" maxlength="72" autocomplete="new-password"><span class="fm-muted">Use 12–72 characters. Changing email or password signs the client out.</span></label>
+            <label>Role<select name="role_id" required aria-describedby="client-role-help">@foreach($roles as $role)<option value="{{ $role->id }}" @selected((string) old('role_id', $client->role_id) === (string) $role->id)>{{ $role->name }}</option>@endforeach</select><span class="fm-muted" id="client-role-help">Admin grants administrative access and removes this account from the Clients list.</span></label>
+            <label>New password (optional)<input type="password" name="password" minlength="12" maxlength="72" autocomplete="new-password"><span class="fm-muted">Use 12–72 characters. Changing email, password, or role signs the client out.</span></label>
             <label>Confirm new password<input type="password" name="password_confirmation" minlength="12" maxlength="72" autocomplete="new-password"></label>
             <div class="fm-create-actions"><a class="admin-button" href="{{ route('clients.index') }}">Cancel</a><button class="admin-button admin-button-primary" type="submit">Save changes</button></div>
         </form>

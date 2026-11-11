@@ -3,10 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\Form;
+use App\Models\Role;
 use App\Models\User;
 use App\Services\Forms\FormReportService;
 use App\Services\Forms\FormSchemaService;
 use App\Services\Forms\FormService;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +49,142 @@ class FormBuilderTest extends TestCase
     private function submit(Form $form, array $answers)
     {
         return $this->postJson(route('public-forms.submit', $form->slug), ['version_id' => $form->current_published_version_id, 'answers' => $answers]);
+    }
+
+    public function test_table_options_can_be_filtered_published_and_submitted_as_a_snapshot(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $admin = User::factory()->for(Role::query()->where('code', 'admin')->sole())->create();
+        $role = Role::query()->where('code', 'agency')->sole();
+        $import = $this->actingAs($admin)->postJson(route('forms.option-sources'), [
+            'source' => 'roles', 'column' => 'name',
+            'filters' => [['column' => 'code', 'operator' => 'equals', 'value' => 'agency']],
+        ])->assertOk()->assertJsonPath('options.0', (string) $role->id)->json();
+        $form = $this->publish($this->makeForm($admin, [$this->field('role_choice', 'select', ['options' => $import['options'], 'option_labels' => $import['option_labels']])]));
+        $role->update(['name' => 'Renamed agency']);
+        $this->get(route('public-forms.show', $form->slug))->assertOk()->assertSee('Agency')->assertDontSee('Renamed agency');
+        $this->get(route('public-forms.show', $form->slug))->assertSee('value="'.$role->id.'" >Agency', false);
+        $this->submit($form, ['role_choice' => 'Agency'])->assertUnprocessable();
+        $this->submit($form, ['role_choice' => '999999'])->assertUnprocessable();
+        $this->submit($form, ['role_choice' => (string) $role->id])->assertRedirect();
+        $this->assertSame((string) $role->id, $form->submissions()->sole()->data['role_choice']);
+        $copy = app(FormService::class)->duplicate($form, $admin);
+        $this->assertSame('Agency', $copy->fields->sole()->option_labels[$role->id]);
+    }
+
+    public function test_live_dropdowns_show_current_filtered_records_and_reject_stale_or_unmatched_ids(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $admin = User::factory()->for(Role::query()->where('code', Role::ADMIN)->sole())->create();
+        $agency = Role::query()->where('code', Role::AGENCY)->sole();
+        $staff = Role::query()->where('code', Role::STAFF)->sole();
+        $source = [
+            'source' => 'roles',
+            'column' => 'name',
+            'filters' => [['column' => 'code', 'operator' => 'equals', 'value' => 'agency']],
+        ];
+        $form = $this->publish($this->makeForm($admin, [
+            $this->field('role_choice', 'select', ['options' => [], 'option_source' => $source]),
+        ]));
+
+        $this->get(route('public-forms.show', $form->slug))
+            ->assertOk()
+            ->assertSee('value="'.$agency->id.'" >Agency', false)
+            ->assertDontSee('value="'.$staff->id.'"');
+        $this->submit($form, ['role_choice' => (string) $staff->id])->assertUnprocessable()->assertJsonValidationErrors('answers.role_choice');
+
+        $agency->update(['name' => 'Current agency name']);
+        $this->get(route('public-forms.show', $form->slug))->assertSee('Current agency name')->assertDontSee('>Agency</option>');
+        $this->submit($form, ['role_choice' => (string) $agency->id])->assertRedirect();
+        $this->assertSame((string) $agency->id, $form->submissions()->sole()->data['role_choice']);
+        $agency->delete();
+        $this->submit($form, ['role_choice' => (string) $agency->id])->assertUnprocessable()->assertJsonValidationErrors('answers.role_choice');
+        $this->assertDatabaseCount('form_submissions', 1);
+    }
+
+    public function test_live_staff_filters_are_saved_and_enforced_when_records_change(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $admin = User::factory()->for(Role::query()->where('code', Role::ADMIN)->sole())->create();
+        $staffRole = Role::query()->where('code', Role::STAFF)->sole();
+        $agencyRole = Role::query()->where('code', Role::AGENCY)->sole();
+        $staff = User::factory()->for($staffRole)->create(['name' => 'Eligible staff member']);
+        $inactive = User::factory()->for($staffRole)->create(['name' => 'Inactive staff member', 'is_active' => false]);
+        $agency = User::factory()->for($agencyRole)->create(['name' => 'Agency member']);
+        $source = [
+            'source' => 'users', 'column' => 'name', 'filters' => [
+                ['column' => 'role_id', 'operator' => 'equals', 'value' => (string) $staffRole->id],
+                ['column' => 'is_active', 'operator' => 'equals', 'value' => '1'],
+            ],
+        ];
+        $draft = $this->makeForm($admin, [$this->field('staff_member', 'select', ['options' => [], 'option_source' => $source])]);
+        $this->assertSame($source, $draft->fields->sole()->option_source);
+        $this->get(route('forms.edit', $draft))->assertOk()
+            ->assertViewHas('definition', fn ($definition) => $definition['fields'][0]['option_source'] === $source);
+        $form = $this->publish($draft);
+
+        $this->get(route('public-forms.show', $form->slug))->assertOk()->assertSee('Eligible staff member')
+            ->assertDontSee('Inactive staff member')->assertDontSee('Agency member');
+        foreach ([$inactive, $agency] as $unmatched) {
+            $this->submit($form, ['staff_member' => (string) $unmatched->id])
+                ->assertUnprocessable()->assertJsonValidationErrors('answers.staff_member');
+        }
+
+        $staff->is_active = false;
+        $staff->save();
+        $inactive->is_active = true;
+        $inactive->save();
+        $this->get(route('public-forms.show', $form->slug))->assertOk()->assertSee('Inactive staff member')->assertDontSee('Eligible staff member');
+        $this->submit($form, ['staff_member' => (string) $staff->id])->assertUnprocessable()->assertJsonValidationErrors('answers.staff_member');
+        $this->submit($form, ['staff_member' => (string) $inactive->id])->assertRedirect();
+        $this->assertSame((string) $inactive->id, $form->submissions()->sole()->data['staff_member']);
+    }
+
+    public function test_invalid_typed_filters_cannot_be_saved_in_a_live_dropdown(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $admin = User::factory()->for(Role::query()->where('code', Role::ADMIN)->sole())->create();
+        $form = app(FormService::class)->create($admin, 'Invalid filtered source');
+        $payload = $this->payload($form, [$this->field('staff_member', 'select', [
+            'options' => [], 'option_source' => [
+                'source' => 'users', 'column' => 'name',
+                'filters' => [['column' => 'is_active', 'operator' => 'contains', 'value' => '1']],
+            ],
+        ])]);
+        $this->actingAs($admin)->putJson(route('forms.update', $form), $payload)
+            ->assertUnprocessable()->assertJsonValidationErrors('fields.0.option_source');
+        $this->assertDatabaseCount('form_fields', 0);
+    }
+
+    public function test_only_admins_can_save_live_sources_and_source_columns_are_allowlisted(): void
+    {
+        $this->seed(RoleSeeder::class);
+        $owner = User::factory()->create();
+        $form = app(FormService::class)->create($owner, 'Dropdown source validation');
+        $payload = $this->payload($form, [
+            $this->field('role_choice', 'select', [
+                'options' => [],
+                'option_source' => ['source' => 'roles', 'column' => 'name', 'filters' => []],
+            ]),
+        ]);
+
+        $this->actingAs($owner)->putJson(route('forms.update', $form), $payload)
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('fields.0.option_source');
+        $this->assertDatabaseCount('form_fields', 0);
+
+        $admin = User::factory()->for(Role::query()->where('code', Role::ADMIN)->sole())->create();
+        $form = app(FormService::class)->create($admin, 'Invalid dropdown source');
+        $payload = $this->payload($form, [
+            $this->field('role_choice', 'select', [
+                'options' => [],
+                'option_source' => ['source' => 'users', 'column' => 'password', 'filters' => []],
+            ]),
+        ]);
+        $this->actingAs($admin)->putJson(route('forms.update', $form), $payload)
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('fields.0.option_source');
+        $this->assertDatabaseCount('form_fields', 0);
     }
 
     public function test_the_farmer_registration_workflow_stores_typed_answers_and_exports_them(): void

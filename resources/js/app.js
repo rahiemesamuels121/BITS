@@ -1,5 +1,7 @@
 import './forms.js';
 import './admin-dashboard.js';
+import './page-loading.js';
+import './contract-assignments.js';
 
 const menuToggle = document.querySelector('[data-menu-toggle]');
 const navigation = document.querySelector('#site-navigation');
@@ -11,19 +13,10 @@ let revealObserver;
 
 if ('IntersectionObserver' in window && typeof Element.prototype.animate === 'function') {
     const revealSelector = [
-        '.hero > .hero-eyebrow',
-        '.hero > h1',
-        '.hero > .hero-description',
-        '.hero > .hero-actions',
-        '.hero > .hero-note',
-        '.quick-actions',
-        '.platform-preview',
-        '.principles-strip > span',
         '.section-heading',
         '.feature-card',
         '.about-symbol',
         '.about-copy',
-        '.get-started-section > :is(.eyebrow, h2, p, .button)',
         '.auth-card',
     ].join(', ');
     const revealed = new WeakSet();
@@ -121,116 +114,4 @@ if (menuToggle && navigation) {
     });
 }
 
-const tour = document.querySelector('#platform-tour');
-
-if (tour && typeof tour.showModal === 'function') {
-    const stepButtons = [...tour.querySelectorAll('[data-tour-step]')];
-    const panels = [...tour.querySelectorAll('[data-tour-panel]')];
-    let currentStep = 0;
-    let returnFocus = null;
-
-    const selectStep = (step, focus = false) => {
-        const selectedButton = stepButtons.find((button) => Number(button.dataset.tourStep) === step);
-
-        if (!selectedButton) {
-            return;
-        }
-
-        currentStep = step;
-
-        stepButtons.forEach((button) => {
-            const selected = button === selectedButton;
-            button.setAttribute('aria-selected', String(selected));
-            button.tabIndex = selected ? 0 : -1;
-        });
-
-        panels.forEach((panel) => {
-            panel.hidden = Number(panel.dataset.tourPanel) !== step;
-        });
-
-        if (focus) {
-            selectedButton.focus();
-        }
-    };
-
-    selectStep(currentStep);
-
-    document.querySelectorAll('[data-open-tour]').forEach((button) => {
-        button.addEventListener('click', (event) => {
-            event.preventDefault();
-            returnFocus = button;
-            selectStep(0);
-
-            if (!tour.open) {
-                tour.showModal();
-                document.documentElement.classList.add('tour-open');
-            }
-        });
-    });
-
-    tour.querySelectorAll('[data-close-dialog]').forEach((button) => {
-        button.addEventListener('click', () => tour.close());
-    });
-
-    tour.addEventListener('click', (event) => {
-        if (event.target !== tour) {
-            return;
-        }
-
-        const bounds = tour.getBoundingClientRect();
-        const outside = event.clientX < bounds.left || event.clientX > bounds.right
-            || event.clientY < bounds.top || event.clientY > bounds.bottom;
-
-        if (outside) {
-            tour.close();
-        }
-    });
-
-    tour.addEventListener('close', () => {
-        document.documentElement.classList.remove('tour-open');
-
-        if (returnFocus?.isConnected) {
-            returnFocus.focus();
-        }
-    });
-
-    stepButtons.forEach((button, index) => {
-        button.addEventListener('click', () => selectStep(Number(button.dataset.tourStep)));
-
-        button.addEventListener('keydown', (event) => {
-            let targetIndex;
-
-            switch (event.key) {
-                case 'ArrowRight':
-                    targetIndex = (index + 1) % stepButtons.length;
-                    break;
-                case 'ArrowLeft':
-                    targetIndex = (index - 1 + stepButtons.length) % stepButtons.length;
-                    break;
-                case 'Home':
-                    targetIndex = 0;
-                    break;
-                case 'End':
-                    targetIndex = stepButtons.length - 1;
-                    break;
-                default:
-                    return;
-            }
-
-            event.preventDefault();
-            selectStep(Number(stepButtons[targetIndex].dataset.tourStep), true);
-        });
-    });
-
-    tour.querySelectorAll('[data-tour-next]').forEach((button) => {
-        button.addEventListener('click', () => {
-            const index = stepButtons.findIndex((step) => Number(step.dataset.tourStep) === currentStep);
-            const next = stepButtons[(index + 1) % stepButtons.length];
-
-            if (next) {
-                selectStep(Number(next.dataset.tourStep));
-                panels.find((panel) => Number(panel.dataset.tourPanel) === currentStep)?.focus();
-            }
-        });
-    });
-}
+import './contract-term.js';

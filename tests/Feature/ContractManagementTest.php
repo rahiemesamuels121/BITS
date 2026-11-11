@@ -22,6 +22,51 @@ class ContractManagementTest extends TestCase
         return User::factory()->for(Role::query()->where('code', $role)->firstOrFail())->create();
     }
 
+    public function test_contract_status_and_fixed_dates_can_be_saved_and_changed_to_indefinite(): void
+    {
+        $admin = $this->account(Role::ADMIN);
+        $this->actingAs($admin)->post(route('contracts.store'), [
+            'name' => 'Work and travel', 'is_active' => '0', 'is_indefinite' => '0',
+            'starts_at' => '2026-11-01', 'ends_at' => '2027-05-31',
+        ])->assertRedirect(route('contracts.index'));
+        $contract = Contract::query()->sole();
+        $this->assertFalse($contract->is_active);
+        $this->assertFalse($contract->is_indefinite);
+        $this->assertSame('2026-11-01', $contract->starts_at->toDateString());
+        $this->assertSame('2027-05-31', $contract->ends_at->toDateString());
+        $this->get(route('contracts.edit', $contract))->assertOk()->assertSee('2026-11-01')->assertSee('2027-05-31');
+        $this->get(route('contracts.index', ['status' => 'active']))->assertDontSee('Work and travel');
+        $this->get(route('contracts.index', ['status' => 'inactive']))->assertSee('Work and travel');
+        $this->put(route('contracts.update', $contract), [
+            'name' => $contract->name, 'is_active' => true, 'is_indefinite' => true,
+            'starts_at' => '2026-11-01', 'ends_at' => '2027-05-31',
+        ])->assertRedirect(route('contracts.index'));
+        $contract->refresh();
+        $this->assertTrue($contract->is_active);
+        $this->assertTrue($contract->is_indefinite);
+        $this->assertNull($contract->starts_at);
+        $this->assertNull($contract->ends_at);
+    }
+
+    public function test_contract_dates_and_status_are_validated(): void
+    {
+        $admin = $this->account(Role::ADMIN);
+        $this->actingAs($admin)->post(route('contracts.store'), [
+            'name' => 'Missing dates', 'is_indefinite' => false,
+        ])->assertSessionHasErrors(['starts_at', 'ends_at']);
+        $this->post(route('contracts.store'), [
+            'name' => 'Backwards dates', 'is_indefinite' => '0', 'starts_at' => '2027-01-01', 'ends_at' => '2026-01-01',
+        ])->assertSessionHasErrors('ends_at');
+        $this->post(route('contracts.store'), [
+            'name' => 'Invalid flags', 'is_indefinite' => 'unexpected', 'is_active' => 'unexpected',
+        ])->assertSessionHasErrors(['is_indefinite', 'is_active']);
+        $this->assertDatabaseCount('contracts', 0);
+        $this->post(route('contracts.store'), [
+            'name' => 'One-day contract', 'is_indefinite' => false, 'starts_at' => '2027-01-01', 'ends_at' => '2027-01-01',
+        ])->assertRedirect(route('contracts.index'));
+        $this->assertTrue(Contract::query()->sole()->is_active);
+    }
+
     public function test_only_admins_can_manage_contracts(): void
     {
         $this->get(route('contracts.index'))->assertRedirect(route('login'));
@@ -52,11 +97,12 @@ class ContractManagementTest extends TestCase
 
         $this->post(route('contracts.store'), [
             'name' => 'Annual inspections', 'description' => 'Site inspection agreement.',
-            'client_id' => $client->id, 'form_id' => $form->id, 'id' => 99999,
+            'client_ids' => [$client->id], 'form_id' => $form->id, 'id' => 99999,
         ])->assertRedirect(route('contracts.index'));
 
         $contract = Contract::query()->sole();
-        $this->assertDatabaseHas('contracts', ['name' => 'Annual inspections', 'description' => 'Site inspection agreement.', 'client_id' => $client->id, 'form_id' => $form->id]);
+        $this->assertDatabaseHas('contracts', ['name' => 'Annual inspections', 'description' => 'Site inspection agreement.', 'form_id' => $form->id]);
+        $this->assertDatabaseHas('contract_user', ['contract_id' => $contract->id, 'user_id' => $client->id]);
         $this->assertTrue($contract->form->is($form));
         $this->assertTrue($form->contract->is($contract));
         $this->assertTrue($client->contracts()->sole()->is($contract));
@@ -65,13 +111,59 @@ class ContractManagementTest extends TestCase
         $this->actingAs($client)->get(route('forms.edit', $form))->assertForbidden();
     }
 
+    public function test_multiple_clients_can_share_a_contract_and_assignments_can_be_changed(): void
+    {
+        $admin = $this->account(Role::ADMIN);
+        $first = $this->account(Role::AGENCY);
+        $second = $this->account(Role::AGENCY);
+
+        $this->actingAs($admin)->post(route('contracts.store'), [
+            'name' => 'Work and travel', 'client_ids' => [$first->id, $second->id],
+        ])->assertRedirect(route('contracts.index'));
+
+        $contract = Contract::query()->sole();
+        $this->assertEqualsCanonicalizing([$first->id, $second->id], $contract->clients->modelKeys());
+        $this->assertTrue($first->contracts()->sole()->is($contract));
+        $this->assertTrue($second->contracts()->sole()->is($contract));
+        $this->get(route('contracts.index', ['client_id' => $second->id]))
+            ->assertOk()->assertSee('Work and travel')->assertSee($first->name)->assertSee($second->name);
+        $this->get(route('contracts.edit', $contract))->assertOk()
+            ->assertSee('name="client_ids[]" value="'.$first->id.'" checked', false)
+            ->assertSee('name="client_ids[]" value="'.$second->id.'" checked', false);
+
+        $this->put(route('contracts.update', $contract), [
+            'name' => 'Work and travel', 'client_ids' => [$second->id],
+        ])->assertRedirect(route('contracts.index'));
+        $this->assertEquals([$second->id], $contract->fresh()->clients->modelKeys());
+        $this->get(route('contracts.index', ['client_id' => $first->id]))->assertDontSee('Work and travel');
+
+        $this->put(route('contracts.update', $contract), ['name' => 'Work and travel'])
+            ->assertRedirect(route('contracts.index'));
+        $this->assertCount(0, $contract->fresh()->clients);
+    }
+
+    public function test_invalid_or_duplicate_clients_do_not_partially_change_assignments(): void
+    {
+        $admin = $this->account(Role::ADMIN);
+        $client = $this->account(Role::AGENCY);
+        $contract = Contract::factory()->hasAttached($client, [], 'clients')->create();
+
+        foreach ([[$client->id, $admin->id], [$client->id, 999999], [$client->id, $client->id]] as $ids) {
+            $this->actingAs($admin)->put(route('contracts.update', $contract), [
+                'name' => 'Invalid change', 'client_ids' => $ids,
+            ])->assertSessionHasErrors();
+            $this->assertEquals([$client->id], $contract->fresh()->clients->modelKeys());
+            $this->assertSame($contract->name, $contract->fresh()->name);
+        }
+    }
+
     public function test_contract_can_be_created_before_attaching_a_form_or_assigning_a_client(): void
     {
         $admin = $this->account(Role::ADMIN);
 
         $this->actingAs($admin)->post(route('contracts.store'), ['name' => 'Pending agreement'])->assertRedirect(route('contracts.index'));
 
-        $this->assertDatabaseHas('contracts', ['name' => 'Pending agreement', 'client_id' => null, 'form_id' => null]);
+        $this->assertDatabaseHas('contracts', ['name' => 'Pending agreement', 'form_id' => null]);
         $this->get(route('contracts.index'))->assertOk()->assertSee('Unassigned')->assertSee('No form attached');
     }
 
@@ -84,13 +176,15 @@ class ContractManagementTest extends TestCase
         $contract = Contract::factory()->for($first, 'form')->create();
 
         $this->actingAs($admin)->get(route('contracts.edit', $contract))->assertOk()->assertSee('Original form')->assertSee('Replacement form');
-        $this->put(route('contracts.update', $contract), ['name' => 'Updated agreement', 'client_id' => $client->id, 'form_id' => $second->id])->assertRedirect(route('contracts.index'));
+        $this->put(route('contracts.update', $contract), ['name' => 'Updated agreement', 'client_ids' => [$client->id], 'form_id' => $second->id])->assertRedirect(route('contracts.index'));
 
-        $this->assertDatabaseHas('contracts', ['id' => $contract->id, 'name' => 'Updated agreement', 'client_id' => $client->id, 'form_id' => $second->id]);
+        $this->assertDatabaseHas('contracts', ['id' => $contract->id, 'name' => 'Updated agreement', 'form_id' => $second->id]);
+        $this->assertDatabaseHas('contract_user', ['contract_id' => $contract->id, 'user_id' => $client->id]);
         $this->assertNull($first->fresh()->contract);
 
-        $this->put(route('contracts.update', $contract), ['name' => 'Updated agreement', 'client_id' => '', 'form_id' => ''])->assertRedirect(route('contracts.index'));
-        $this->assertDatabaseHas('contracts', ['id' => $contract->id, 'client_id' => null, 'form_id' => null]);
+        $this->put(route('contracts.update', $contract), ['name' => 'Updated agreement', 'client_ids' => [], 'form_id' => ''])->assertRedirect(route('contracts.index'));
+        $this->assertDatabaseHas('contracts', ['id' => $contract->id, 'form_id' => null]);
+        $this->assertDatabaseMissing('contract_user', ['contract_id' => $contract->id]);
         $this->assertModelExists($second);
     }
 
@@ -120,8 +214,8 @@ class ContractManagementTest extends TestCase
         $form = app(FormService::class)->create($admin, 'Removed form');
         $form->delete();
 
-        $this->actingAs($admin)->post(route('contracts.store'), ['name' => '', 'client_id' => $admin->id, 'form_id' => 99999])->assertSessionHasErrors(['name', 'client_id', 'form_id']);
-        $this->post(route('contracts.store'), ['name' => 'Invalid assignment', 'client_id' => $client->id, 'form_id' => $form->id])->assertSessionHasErrors(['client_id', 'form_id']);
+        $this->actingAs($admin)->post(route('contracts.store'), ['name' => '', 'client_ids' => [$admin->id], 'form_id' => 99999])->assertSessionHasErrors(['name', 'client_ids.0', 'form_id']);
+        $this->post(route('contracts.store'), ['name' => 'Invalid assignment', 'client_ids' => [$client->id], 'form_id' => $form->id])->assertSessionHasErrors(['client_ids.0', 'form_id']);
         $this->post(route('contracts.store'), ['name' => str_repeat('x', 256), 'description' => str_repeat('x', 10001)])->assertSessionHasErrors(['name', 'description']);
 
         $this->assertDatabaseCount('contracts', 0);
@@ -145,7 +239,7 @@ class ContractManagementTest extends TestCase
     {
         $admin = $this->account(Role::ADMIN);
         $client = $this->account(Role::AGENCY);
-        $contract = Contract::factory()->for($client, 'client')->create(['name' => '<script>alert(1)</script>']);
+        $contract = Contract::factory()->hasAttached($client, [], 'clients')->create(['name' => '<script>alert(1)</script>']);
         $other = Contract::factory()->create(['name' => 'Other agreement']);
 
         $this->actingAs($admin)->get(route('contracts.index', ['client_id' => $client->id, 'q' => 'alert']))->assertOk()
@@ -158,12 +252,12 @@ class ContractManagementTest extends TestCase
         $admin = $this->account(Role::ADMIN);
         $client = $this->account(Role::AGENCY);
         $form = app(FormService::class)->create($admin, 'Historical checklist');
-        $contract = Contract::factory()->for($client, 'client')->for($form, 'form')->create();
+        $contract = Contract::factory()->hasAttached($client, [], 'clients')->for($form, 'form')->create();
         $client->delete();
         $form->delete();
 
         $this->actingAs($admin)->get(route('contracts.index'))->assertOk()->assertSee($client->name)->assertSee('Historical checklist')->assertSee('removed client')->assertSee('removed form');
-        $this->get(route('contracts.edit', $contract))->assertOk()->assertSee('The previously assigned client was removed.')->assertSee('The previously attached form was removed.');
-        $this->assertDatabaseHas('contracts', ['id' => $contract->id, 'client_id' => $client->id, 'form_id' => $form->id]);
+        $this->get(route('contracts.edit', $contract))->assertOk()->assertSee('A previously assigned client was removed.')->assertSee('The previously attached form was removed.');
+        $this->assertDatabaseHas('contracts', ['id' => $contract->id, 'form_id' => $form->id]);
     }
 }

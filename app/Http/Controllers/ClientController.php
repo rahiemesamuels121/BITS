@@ -28,7 +28,9 @@ class ClientController extends Controller
 
     public function create()
     {
-        return view('clients.create');
+        return view('clients.create', [
+            'roles' => Role::query()->orderBy('name')->get(),
+        ]);
     }
 
     public function store(Request $request)
@@ -39,9 +41,10 @@ class ClientController extends Controller
             'email' => ['required', 'email', 'max:254', 'unique:users,email'],
             'password' => ['required', 'string', 'max:72', 'confirmed', Password::min(12)],
             'is_active' => ['required', 'boolean'],
+            'role_id' => ['required', 'integer', Rule::exists('roles', 'id')],
         ]);
         DB::transaction(function () use ($data) {
-            $role = Role::query()->firstOrCreate(['code' => Role::AGENCY], ['name' => 'Agency']);
+            $role = Role::query()->findOrFail($data['role_id']);
             $client = new User(collect($data)->only(['name', 'email', 'password'])->all());
             $client->role()->associate($role);
             $client->is_active = (bool) $data['is_active'];
@@ -72,7 +75,10 @@ class ClientController extends Controller
     {
         abort_unless($client->role?->code === Role::AGENCY, 404);
 
-        return view('clients.edit', compact('client'));
+        return view('clients.edit', [
+            'client' => $client,
+            'roles' => Role::query()->orderBy('name')->get(),
+        ]);
     }
 
     public function update(Request $request, User $client)
@@ -83,19 +89,23 @@ class ClientController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:254', Rule::unique('users', 'email')->ignore($client->id)],
             'password' => ['nullable', 'string', 'max:72', 'confirmed', Password::min(12)],
+            'role_id' => ['sometimes', 'required', 'integer', Rule::exists('roles', 'id')],
         ]);
         DB::transaction(function () use ($client, $data) {
             $client = User::query()->lockForUpdate()->findOrFail($client->id);
             abort_unless($client->role?->code === Role::AGENCY, 404);
             $oldEmail = $client->email;
             $client->fill(collect($data)->only(['name', 'email'])->all());
+            if (isset($data['role_id'])) {
+                $client->role()->associate(Role::query()->findOrFail($data['role_id']));
+            }
             if (! empty($data['password'])) {
                 $client->password = $data['password'];
             }
             if ($client->isDirty('email')) {
                 $client->email_verified_at = null;
             }
-            if ($client->isDirty(['email', 'password'])) {
+            if ($client->isDirty(['email', 'password', 'role_id'])) {
                 $this->revokeAccess($client);
                 DB::table('password_reset_tokens')->where('email', $oldEmail)->delete();
             }

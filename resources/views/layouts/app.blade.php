@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="description" content="@yield('description', 'A calmer approach to service delivery. Explore the BITS service desk concept.')">
-        <meta name="theme-color" content="#2b2876">
+        <meta name="theme-color" content="#02AEB9">
         <title>@yield('title', 'BITS')</title>
         @fonts('instrument-sans')
         @vite(['resources/css/app.css', 'resources/js/app.js'])

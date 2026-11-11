@@ -1,0 +1,69 @@
+/* Account dashboard for clients. All details are read-only. */
+.admin-body .client-responses-section { margin-top: 34px; scroll-margin-top: 104px; }
+.admin-body .client-response-meta { display: block; margin-top: 6px; font-size: 11px; color: var(--admin-muted); }
+.admin-body .client-responses-card .admin-table td { white-space: normal; min-width: 110px; }
+.admin-body .client-responses-card .admin-table td:nth-child(2) { min-width: 200px; }
+.admin-body .client-response-empty { padding: 24px; text-align: center; }
+.admin-body .client-response-empty h3 { margin: 0 0 9px; font-size: 16px; font-weight: 600; }
+.admin-body .client-response-empty p { margin: 0; color: var(--admin-muted); font-size: 13px; }
+.admin-body .client-response-heading { margin-top: 24px; }
+.admin-body .client-assignment-details { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--admin-line); }
+.admin-body .client-assignment-details h4 { margin: 0; font-size: 15px; font-weight: 600; color: var(--admin-ink); }
+.admin-body .client-assignment-details > p { margin: 8px 0 12px; }
+.admin-body .client-dashboard-grid { display: grid; grid-template-columns: minmax(260px, 330px) minmax(0, 1fr); gap: 28px; align-items: start; }
+.admin-body .client-account-card, .admin-body .client-contracts-section { min-width: 0; scroll-margin-top: 104px; }
+.admin-body .client-account-profile { display: flex; align-items: center; gap: 16px; padding: 26px; border-bottom: 1px solid var(--admin-line); background: #f8fbfc; }
+.admin-body .client-account-avatar { display: grid; place-items: center; flex: none; width: 58px; height: 58px; border-radius: 16px; border: 1px solid #cde3e5; background: #e9f5f5; color: #08777c; font-size: 21px; font-weight: 600; }
+.admin-body .client-account-profile h2 { margin: 0 0 9px; color: var(--admin-ink); font-size: 19px; line-height: 1.4; overflow-wrap: anywhere; }
+.admin-body .client-account-profile .admin-eyebrow { margin-bottom: 6px; font-size: 9px; }
+.admin-body .client-account-details { padding: 25px 26px 10px; }
+.admin-body .client-account-details h2 { margin: 0 0 7px; color: var(--admin-ink); font-size: 16px; font-weight: 600; }
+.admin-body .client-account-details dl { margin: 0; }
+.admin-body .client-account-details dl > div { padding: 16px 0; border-bottom: 1px solid #edf0f5; }
+.admin-body .client-account-details dl > div:last-child { border: 0; }
+.admin-body .client-account-details dt, .admin-body .client-contract-term dt { color: var(--admin-muted); font-size: 12px; line-height: 1.5; }
+.admin-body .client-account-details dd, .admin-body .client-contract-term dd { margin: 5px 0 0; color: var(--admin-ink); font-size: 14px; font-weight: 500; line-height: 1.6; overflow-wrap: anywhere; }
+.admin-body .client-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 0 0 18px; }
+.admin-body .client-section-heading h2 { margin: 0; color: var(--admin-ink); font-size: 23px; font-weight: 600; letter-spacing: -.5px; }
+.admin-body .client-section-heading .admin-eyebrow { margin-bottom: 6px; }
+.admin-body .client-contract-count { flex: none; padding: 7px 11px; border: 1px solid var(--admin-line); border-radius: 7px; color: #617189; background: #fff; font-size: 12px; font-variant-numeric: tabular-nums; }
+.admin-body .client-contract-list { display: grid; gap: 20px; }
+.admin-body .client-contract-card { padding: 26px; }
+.admin-body .client-contract-heading { display: flex; align-items: flex-start; gap: 13px; }
+.admin-body .client-contract-heading > div { min-width: 0; flex: 1; }
+.admin-body .client-contract-heading .admin-eyebrow { margin-bottom: 5px; font-size: 9px; }
+.admin-body .client-contract-heading h3 { margin: 0; color: var(--admin-ink); font-size: 20px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+.admin-body .client-contract-heading > .admin-status { flex: none; }
+.admin-body .client-contract-icon { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border: 1px solid #d4e7e8; border-radius: 11px; color: #087f83; background: #eef7f7; }
+.admin-body .client-contract-description { margin: 20px 0; color: #53667c; font-size: 14px; line-height: 1.9; white-space: pre-line; overflow-wrap: anywhere; }
+.admin-body .client-contract-term { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 18px; margin: 22px 0; padding: 18px 20px; border: 1px solid #e6ecf3; border-radius: 9px; background: #f8fafc; }
+.admin-body .client-contract-form { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 16px; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--admin-line); }
+.admin-body .client-contract-form > div { flex: 1; min-width: 140px; }
+.admin-body .client-contract-form > div > span { display: block; margin-bottom: 5px; font-size: 11px; color: var(--admin-muted); }
+.admin-body .client-contract-form > div > strong { display: block; color: var(--admin-ink); font-size: 14px; font-weight: 500; line-height: 1.6; overflow-wrap: anywhere; }
+.admin-body .client-contract-form-note { margin: 0; color: var(--admin-muted); font-size: 12px; line-height: 1.7; }
+.admin-body .client-contract-empty { padding: 48px 30px; text-align: center; }
+.admin-body .client-contract-empty .client-contract-icon { margin: 0 auto 21px; width: 52px; height: 52px; }
+.admin-body .client-contract-empty h3 { margin: 0 0 12px; color: var(--admin-ink); font-size: 21px; font-weight: 600; }
+.admin-body .client-contract-empty p { max-width: 380px; margin: 0 auto; color: var(--admin-muted); font-size: 14px; line-height: 1.8; }
+@media (max-width: 1100px) {
+    .admin-body .client-dashboard-grid { grid-template-columns: 1fr; gap: 28px; }
+    .admin-body .client-account-details dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; }
+    .admin-body .client-account-details dl > div:nth-last-child(2) { border: 0; }
+}
+@media (max-width: 560px) {
+    .admin-body .client-dashboard-heading .admin-button { width: 100%; }
+    .admin-body .client-account-profile { padding: 22px; }
+    .admin-body .client-account-details { padding: 22px 22px 8px; }
+    .admin-body .client-account-details dl { display: block; }
+    .admin-body .client-account-details dl > div:nth-last-child(2) { border-bottom: 1px solid #edf0f5; }
+    .admin-body .client-contract-card { padding: 22px 20px; }
+    .admin-body .client-contract-heading { flex-wrap: wrap; }
+    .admin-body .client-contract-heading > .admin-status { margin-left: 55px; }
+    .admin-body .client-contract-heading h3 { font-size: 19px; }
+    .admin-body .client-contract-term { grid-template-columns: 1fr; padding: 17px; gap: 15px; }
+    .admin-body .client-contract-form { align-items: stretch; flex-direction: column; }
+    .admin-body .client-contract-form .admin-button { white-space: normal; }
+    .admin-body .client-section-heading h2 { font-size: 21px; }
+    .admin-body .client-contract-empty { padding: 35px 23px; }
+}

@@ -17,8 +17,9 @@ class FormPublishingService
             $form = Form::query()->lockForUpdate()->findOrFail($form->id);
             abort_if($revision !== $form->revision, 409, 'The draft changed. Reload the builder before publishing.');
             $schema = $this->schemas->definition($form);
-            $this->schemas->check($schema, true);
             $settings = $this->schemas->settings($form->draft_settings ?? []);
+            $this->schemas->checkClientReference($schema, $settings);
+            $this->schemas->check($schema, true);
             $version = $form->publishedVersion;
             if (! $version || $this->schemas->fingerprint($version->schema_json) !== $this->schemas->fingerprint($schema) || $this->schemas->fingerprint($version->settings_json) !== $this->schemas->fingerprint($settings)) {
                 $version = $form->versions()->create(['version_number' => ($form->versions()->max('version_number') ?? 0) + 1, 'schema_json' => $schema, 'settings_json' => $settings, 'published_by' => $publisher->id, 'published_at' => now(), 'created_at' => now()]);

@@ -13,6 +13,8 @@ class Role extends Model
 
     public const string ADMIN = 'admin';
 
+    public const string STAFF = 'staff';
+
     /** @return HasMany<User, $this> */
     public function users(): HasMany
     {

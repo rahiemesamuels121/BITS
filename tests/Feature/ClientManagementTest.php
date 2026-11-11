@@ -36,20 +36,50 @@ class ClientManagementTest extends TestCase
         $this->get(route('forms.index'))->assertDontSee('href="'.route('clients.index').'"', false);
     }
 
-    public function test_admin_can_create_a_client_with_a_hashed_password_and_fixed_agency_role(): void
+    public function test_admin_can_create_a_client_with_a_hashed_password_and_selected_agency_role(): void
     {
         $admin = $this->account(Role::ADMIN);
         $this->actingAs($admin)->get(route('clients.create'))->assertOk()->assertSee('Create a client');
         $this->post(route('clients.store'), [
             'name' => 'Example Client', 'email' => 'CLIENT@example.com',
             'password' => 'client-password-123', 'password_confirmation' => 'client-password-123',
-            'is_active' => true, 'role_id' => $admin->role_id,
+            'is_active' => true, 'role_id' => Role::query()->where('code', Role::AGENCY)->sole()->id,
         ])->assertRedirect(route('clients.index'));
         $client = User::where('email', 'client@example.com')->sole();
         $this->assertSame(Role::AGENCY, $client->role->code);
         $this->assertTrue($client->is_active);
         $this->assertTrue(Hash::check('client-password-123', $client->password));
         $this->get(route('clients.index'))->assertOk()->assertSee('Example Client')->assertSee('Deactivate');
+    }
+
+    public function test_create_form_lists_database_roles_and_saves_the_selected_role(): void
+    {
+        $admin = $this->account(Role::ADMIN);
+        $this->actingAs($admin)->get(route('clients.create'))->assertOk()
+            ->assertSee('name="role_id"', false)->assertSee('Agency')->assertSee('Admin');
+
+        $this->post(route('clients.store'), [
+            'name' => 'Additional admin', 'email' => 'additional-admin@example.com',
+            'password' => 'client-password-123', 'password_confirmation' => 'client-password-123',
+            'is_active' => true, 'role_id' => $admin->role_id,
+        ])->assertRedirect(route('clients.index'));
+
+        $created = User::query()->where('email', 'additional-admin@example.com')->sole();
+        $this->assertSame($admin->role_id, $created->role_id);
+        $this->assertTrue($created->isAdmin());
+    }
+
+    public function test_client_creation_requires_an_existing_role_without_creating_an_account(): void
+    {
+        $admin = $this->account(Role::ADMIN);
+        $data = [
+            'name' => 'Invalid role', 'email' => 'invalid-role@example.com',
+            'password' => 'client-password-123', 'password_confirmation' => 'client-password-123',
+            'is_active' => true,
+        ];
+        $this->actingAs($admin)->post(route('clients.store'), $data)->assertSessionHasErrors('role_id');
+        $this->post(route('clients.store'), [...$data, 'role_id' => 999999])->assertSessionHasErrors('role_id');
+        $this->assertDatabaseMissing('users', ['email' => 'invalid-role@example.com']);
     }
 
     public function test_client_creation_validates_email_uniqueness_and_password_confirmation(): void
@@ -133,13 +163,47 @@ class ClientManagementTest extends TestCase
         $client = $this->account(Role::AGENCY);
         $password = $client->password;
         $this->actingAs($admin)->get(route('clients.edit', $client))->assertOk()->assertSee($client->email);
-        $this->put(route('clients.update', $client), ['name' => 'Updated client', 'email' => $client->email, 'password' => '', 'role_id' => $admin->role_id, 'is_active' => false])->assertRedirect(route('clients.index'));
+        $this->put(route('clients.update', $client), ['name' => 'Updated client', 'email' => $client->email, 'password' => '', 'role_id' => $client->role_id, 'is_active' => false])->assertRedirect(route('clients.index'));
         $client->refresh();
         $this->assertSame('Updated client', $client->name);
         $this->assertSame($password, $client->password);
         $this->assertSame(Role::AGENCY, $client->role->code);
         $this->assertTrue($client->is_active);
         $this->put(route('clients.update', $client), ['name' => 'Duplicate', 'email' => $admin->email])->assertSessionHasErrors('email');
+    }
+
+    public function test_admin_can_change_a_client_role_and_revoke_existing_sessions(): void
+    {
+        $admin = $this->account(Role::ADMIN);
+        $client = $this->account(Role::AGENCY);
+        $password = $client->password;
+        $remember = $client->remember_token;
+        config(['session.driver' => 'database']);
+        DB::table('sessions')->insert(['id' => 'role-change-session', 'user_id' => $client->id, 'payload' => '', 'last_activity' => time()]);
+        $this->actingAs($admin)->get(route('clients.edit', $client))->assertOk()
+            ->assertSee('name="role_id"', false)->assertSee('value="'.$client->role_id.'" selected', false);
+        $this->put(route('clients.update', $client), [
+            'name' => $client->name, 'email' => $client->email, 'role_id' => $admin->role_id,
+        ])->assertRedirect(route('clients.index'));
+        $client->refresh();
+        $this->assertTrue($client->isAdmin());
+        $this->assertSame($password, $client->password);
+        $this->assertNotSame($remember, $client->remember_token);
+        $this->assertDatabaseMissing('sessions', ['id' => 'role-change-session']);
+        $this->get(route('clients.index'))->assertDontSee($client->email);
+    }
+
+    public function test_invalid_client_roles_do_not_update_account_details(): void
+    {
+        $admin = $this->account(Role::ADMIN);
+        $client = $this->account(Role::AGENCY);
+        foreach (['', 999999] as $roleId) {
+            $this->actingAs($admin)->put(route('clients.update', $client), [
+                'name' => 'Invalid role change', 'email' => $client->email, 'role_id' => $roleId,
+            ])->assertSessionHasErrors('role_id');
+            $this->assertSame($client->name, $client->fresh()->name);
+            $this->assertSame($client->role_id, $client->fresh()->role_id);
+        }
     }
 
     public function test_changing_email_or_password_revokes_existing_client_access(): void

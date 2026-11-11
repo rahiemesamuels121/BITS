@@ -1,0 +1,90 @@
+/* Workspace overview. Client dashboards keep their own visual treatment. */
+.admin-body.admin-portal .premium-dashboard-heading { align-items: center; margin-bottom: 28px; padding-bottom: 0; border: 0; }
+.admin-body.admin-portal .premium-dashboard-heading h1 { font-size: clamp(30px, 2.8vw, 38px); letter-spacing: -1.25px; line-height: 1.18; color: #122338; }
+.admin-body.admin-portal .premium-dashboard-heading-copy { max-width: 640px; }
+.admin-body.admin-portal .premium-dashboard-heading .admin-eyebrow { margin-bottom: 11px; font-size: 10px; letter-spacing: 1.9px; }
+.admin-body.admin-portal .premium-dashboard-heading .admin-heading-actions { align-items: center; gap: 10px; }
+.admin-body.admin-portal .premium-dashboard-heading .admin-button { min-height: 43px; }
+.admin-body.admin-portal .premium-dashboard-stats { gap: 16px; margin-bottom: 34px; }
+.admin-body.admin-portal .premium-stat { position: relative; padding: 22px 22px 20px; border: 1px solid #e2e8ef; border-radius: 14px; box-shadow: 0 3px 16px #12233805; background: #fff; transition: border-color 160ms ease, box-shadow 160ms ease; }
+.admin-body.admin-portal a.premium-stat:hover { border-color: #abcdd0; box-shadow: 0 7px 22px #1223380c; }
+.admin-body.admin-portal .premium-stat > div { align-items: flex-start; gap: 8px; }
+.admin-body.admin-portal .premium-stat > div > span:first-child { padding-top: 3px; color: #53657b; font-size: 12px; line-height: 1.5; font-weight: 500; }
+.admin-body.admin-portal .premium-stat .admin-stat-icon { width: 33px; height: 33px; border-radius: 10px; border: 1px solid #e1ecee; }
+.admin-body.admin-portal .premium-stat-active .admin-stat-icon { background: #eff8f6; color: #13867d; border-color: #dfefeb; }
+.admin-body.admin-portal .premium-stat-inactive .admin-stat-icon { background: #fff7ed; color: #b77d3e; border-color: #f4e8d8; }
+.admin-body.admin-portal .premium-stat-published .admin-stat-icon { background: #f0f5fb; color: #527fa6; border-color: #e1eaf5; }
+.admin-body.admin-portal .premium-stat > strong { margin-top: 19px; color: #122338; font-size: 39px; letter-spacing: -1.4px; line-height: 1; font-variant-numeric: tabular-nums; }
+.admin-body.admin-portal .premium-stat > p { margin-top: 15px; color: #65758b; font-size: 12px; line-height: 1.7; }
+.admin-body.admin-portal .premium-stat > p .fm-text-link { font-size: 12px; font-weight: 600; }
+.admin-body.admin-portal .premium-dashboard-comparisons { margin: 0 0 34px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-comparisons-heading { margin-bottom: 18px; gap: 16px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-comparisons-heading h2 { font-size: 21px; color: #122338; letter-spacing: -.55px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-comparisons-heading .admin-eyebrow { margin-bottom: 8px; color: #65758b; letter-spacing: 1.8px; font-size: 9px; }
+.admin-body.admin-portal .premium-dashboard-live { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #65758b; line-height: 1.6; }
+.admin-body.admin-portal .premium-dashboard-live > span { width: 5px; height: 5px; flex: none; border-radius: 50%; background: #178c85; box-shadow: 0 0 0 3px #178c850c; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-comparison-grid { gap: 20px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-comparison { border: 1px solid #e0e7ef; border-radius: 15px; padding-bottom: 20px; box-shadow: 0 4px 20px #12233805; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-comparison .admin-card-heading { padding: 23px 23px 12px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-comparison .admin-card-heading h2 { color: #23374f; font-size: 15px; font-weight: 600; letter-spacing: -.25px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-comparison .admin-card-heading p { font-size: 11px; color: #65758b; line-height: 1.65; margin-top: 7px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-chart-total { border-color: #e5eaf1; border-radius: 6px; background: #f8fafc; color: #65758b; font-size: 10px; padding: 5px 7px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-donut { width: 184px; height: 184px; margin-top: 8px; margin-bottom: 18px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-donut circle { stroke-width: 14px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-donut-track { stroke: #f0f3f7; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-donut-center strong { font-size: 30px; letter-spacing: -1.3px; font-weight: 600; color: #122338; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-donut-center span { color: #65758b; font-size: 10px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-chart-legend { margin-inline: 23px; gap: 16px; margin-bottom: 20px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-chart-row dt { font-size: 12px; color: #5b6d83; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-chart-row dd strong { font-size: 13px; color: #23374f; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-chart-row dd > span { font-size: 10px; color: #65758b; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-chart-key { width: 7px; height: 7px; border-radius: 2px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-bar-comparison { margin-top: 32px; gap: 28px; margin-bottom: 16px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-comparison-track { height: 11px; background: #f0f3f7; border-radius: 4px; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-chart-axis { margin-inline: 23px; font-size: 10px; color: #65758b; }
+.admin-body.admin-portal .premium-dashboard-comparisons .dashboard-chart-note { margin-inline: 23px; padding-top: 15px; border-color: #edf0f5; font-size: 11px; color: #65758b; line-height: 1.7; }
+.admin-body.admin-portal .premium-dashboard-records { gap: 22px; }
+.admin-body.admin-portal .premium-dashboard-record-card { border-color: #e0e7ef; border-radius: 15px; box-shadow: 0 4px 20px #12233805; }
+.admin-body.admin-portal .premium-dashboard-record-card > .admin-card-heading { min-height: 94px; padding: 23px; border-bottom: 1px solid #edf0f5; }
+.admin-body.admin-portal .premium-record-heading { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.admin-body.admin-portal .premium-record-icon { display: grid; place-items: center; width: 37px; height: 37px; flex: none; border: 1px solid #e2ecef; border-radius: 10px; color: #408486; background: #f4f9f9; }
+.admin-body.admin-portal .premium-record-icon .admin-icon { width: 17px; height: 17px; }
+.admin-body.admin-portal .premium-record-heading h2 { font-size: 15px; color: #23374f; font-weight: 600; letter-spacing: -.25px; }
+.admin-body.admin-portal .premium-record-heading p { font-size: 11px; color: #65758b; margin-top: 6px; }
+.admin-body.admin-portal .premium-dashboard-record-card .admin-text-button { font-size: 11px; color: #2b7a7d; }
+.admin-body.admin-portal .premium-dashboard-record-card .admin-table th { padding-top: 13px; padding-bottom: 13px; border-top: 0; background: #f9fbfd; color: #65758b; font-size: 10px; letter-spacing: 1px; }
+.admin-body.admin-portal .premium-dashboard-record-card .admin-table td { color: #607188; padding-top: 18px; padding-bottom: 18px; font-size: 13px; }
+.admin-body.admin-portal .premium-dashboard-record-card .admin-table .fm-text-link { color: #375b73; font-size: 13px; font-weight: 500; }
+.admin-body.admin-portal .premium-dashboard-record-card .admin-table tbody tr:hover { background: #fafcfd; }
+.admin-body.admin-portal .premium-dashboard-record-card .admin-table .admin-status { border-radius: 5px; padding: 5px 8px; font-size: 10px; }
+.admin-body.admin-portal .premium-dashboard-record-card .admin-table .premium-dashboard-empty { padding: 30px 24px 32px; text-align: center; white-space: normal; }
+.admin-body.admin-portal .premium-empty-icon { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; color: #9aabb9; background: #f4f7fa; }
+.admin-body.admin-portal .premium-empty-icon .admin-icon { width: 16px; height: 16px; }
+.admin-body.admin-portal .premium-dashboard-empty p { margin: 10px 0 0; color: #65758b; font-size: 12px; }
+@media (max-width: 1250px) {
+    .admin-body.admin-portal .premium-dashboard-stats { gap: 13px; }
+    .admin-body.admin-portal .premium-stat { padding: 20px 18px; }
+    .admin-body.admin-portal .premium-stat > strong { font-size: 35px; }
+}
+@media (max-width: 760px) {
+    .admin-body.admin-portal .premium-dashboard-heading { align-items: flex-start; gap: 18px; }
+    .admin-body.admin-portal .premium-dashboard-heading .admin-heading-actions { width: 100%; }
+    .admin-body.admin-portal .premium-dashboard-heading .admin-heading-actions .admin-button { flex: 1; }
+    .admin-body.admin-portal .premium-dashboard-stats { gap: 11px; margin-bottom: 27px; }
+    .admin-body.admin-portal .premium-stat { padding: 18px 16px; }
+    .admin-body.admin-portal .premium-stat > strong { font-size: 33px; }
+    .admin-body.admin-portal .premium-dashboard-comparisons { margin-bottom: 27px; }
+    .admin-body.admin-portal .premium-dashboard-comparisons .dashboard-comparison-grid { gap: 16px; }
+    .admin-body.admin-portal .premium-dashboard-record-card > .admin-card-heading { padding: 20px; }
+}
+@media (max-width: 480px) {
+    .admin-body.admin-portal .premium-stat > div > span:first-child { font-size: 11px; }
+    .admin-body.admin-portal .premium-stat > p, .admin-body.admin-portal .premium-stat > p .fm-text-link { font-size: 11px; }
+    .admin-body.admin-portal .premium-stat > strong { font-size: 31px; }
+    .admin-body.admin-portal .premium-stat .admin-stat-icon { width: 29px; height: 29px; }
+    .admin-body.admin-portal .premium-dashboard-record-card > .admin-card-heading { gap: 10px; padding-inline: 17px; }
+    .admin-body.admin-portal .premium-record-heading { gap: 9px; }
+    .admin-body.admin-portal .premium-record-heading h2 { font-size: 14px; }
+    .admin-body.admin-portal .premium-record-heading p { font-size: 10px; }
+    .admin-body.admin-portal .premium-record-icon { width: 32px; height: 32px; }
+}

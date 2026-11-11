@@ -1,0 +1,167 @@
+/* Management surfaces share the portal palette without altering control behavior. */
+.admin-body.admin-portal .fm-filters { gap: 16px; margin-bottom: 26px; padding: 20px 22px; border: 1px solid #e0e6ef; border-radius: 14px; background: #fff; box-shadow: 0 3px 14px #172b4304; }
+.admin-body.admin-portal .fm-filters label { gap: 8px; color: #485a71; font-size: 12px; font-weight: 600; }
+.admin-body.admin-portal .fm-filters :is(input, select) { min-height: 44px; padding: 11px 14px; border: 1px solid #dce3ed; border-radius: 8px; background: #fafbfd; color: #24394f; font-size: 13px; font-weight: 400; }
+.admin-body.admin-portal .fm-filters :is(input, select):focus { background: #fff; border-color: #479b9e; }
+.admin-body.admin-portal .fm-filters .admin-button { min-height: 44px; }
+.admin-body.admin-portal .fm-filters .fm-text-link { color: #64758b; font-size: 12px; padding-inline: 4px; }
+
+.admin-body.admin-portal .clients-table-container { border-color: #e0e6ef; border-radius: 14px; box-shadow: 0 3px 16px #172b4304; }
+.admin-body.admin-portal .clients-table { color: #4c5f76; }
+.admin-body.admin-portal .clients-table thead th { padding-block: 17px; border-bottom-color: #e3e9f1; background: #f8fafd; color: #708096; font-size: 10px; font-weight: 600; letter-spacing: 1.1px; }
+.admin-body.admin-portal .clients-table :is(tbody th, td) { padding-block: 20px; border-bottom-color: #edf0f5; font-size: 13px; }
+.admin-body.admin-portal .clients-table tbody th { color: #263a52; font-weight: 600; }
+.admin-body.admin-portal .clients-table tbody tr:hover { background: #f8fbfc; }
+.admin-body.admin-portal .clients-table-actions { gap: 7px; }
+.admin-body.admin-portal .clients-table-actions .admin-button { min-height: 33px; padding: 8px 11px; border-radius: 7px; box-shadow: none; font-size: 12px; }
+.admin-body.admin-portal .clients-table time { color: #768499; font-size: 12px; font-variant-numeric: tabular-nums; }
+.admin-body.admin-portal .pm-client-identity { display: flex; align-items: center; gap: 12px; }
+.admin-body.admin-portal .pm-client-avatar { display: inline-grid; flex: none; place-items: center; width: 36px; height: 36px; border: 1px solid #dbe7ec; border-radius: 11px; background: #edf5f6; color: #26747b; font-size: 12px; font-weight: 600; }
+.admin-body.admin-portal :is(.fm-status, .admin-status) { font-size: 10px; font-weight: 600; letter-spacing: .1px; }
+.admin-body.admin-portal .fm-status-published { color: #24734f; background: #eaf6ef; }
+.admin-body.admin-portal .fm-status-draft { color: #5b7090; background: #edf2f8; }
+.admin-body.admin-portal .fm-status-archived { color: #718096; background: #f0f2f6; }
+.admin-body.admin-portal .clients-table .clients-table-empty { padding: 58px 24px; color: #6b7b8f; }
+.admin-body.admin-portal .clients-table-empty strong { display: block; color: #253a53; font-size: 17px; font-weight: 600; }
+.admin-body.admin-portal .clients-table-empty p { margin: 10px 0 22px; font-size: 13px; }
+
+.admin-body.admin-portal .fm-create-card:not(.contract-editor) { max-width: 740px; padding: 38px 42px; border: 1px solid #e0e7ef; border-radius: 16px; box-shadow: 0 10px 36px #142c4807; }
+.admin-body.admin-portal .fm-create-card:not(.contract-editor) > .admin-eyebrow { margin-bottom: 11px; }
+.admin-body.admin-portal .fm-create-card:not(.contract-editor) > h1 { font-size: 30px; line-height: 1.25; }
+.admin-body.admin-portal .fm-create-card:not(.contract-editor) > p:not(.admin-eyebrow) { margin: 14px 0 30px; color: #718096; font-size: 14px; }
+.admin-body.admin-portal .fm-create-card:not(.contract-editor) .fm-stack { gap: 22px; }
+.admin-body.admin-portal .fm-create-card:not(.contract-editor) .fm-stack label { color: #3d516a; font-size: 12px; font-weight: 600; }
+.admin-body.admin-portal .fm-create-card:not(.contract-editor) .fm-stack :is(input, textarea, select) { min-height: 44px; padding: 12px 14px; border-color: #dce3ed; border-radius: 8px; background: #fcfdfe; color: #263b53; font-size: 14px; font-weight: 400; }
+.admin-body.admin-portal .fm-create-card:not(.contract-editor) .fm-muted { color: #7a889b; font-size: 12px; font-weight: 400; }
+.admin-body.admin-portal .fm-create-card:not(.contract-editor) .fm-create-actions { padding-top: 24px; margin-top: 6px; border-color: #e7ecf3; }
+.admin-body.admin-portal .fm-pagination { margin-top: 24px; padding: 8px 0; color: #7a899d; font-size: 12px; }
+
+.admin-body.admin-portal .fm-form-grid { gap: 23px; }
+.admin-body.admin-portal .fm-form-card { padding: 26px; border-color: #e0e6ef; border-radius: 15px; box-shadow: 0 3px 18px #172b4304; }
+.admin-body.admin-portal .fm-form-card:hover { border-color: #b8d2d7; box-shadow: 0 12px 30px #172b4309; }
+.admin-body.admin-portal .fm-form-card > .fm-muted { margin: 0 0 18px; padding: 8px 10px; border: 1px solid #e5ebf2; border-radius: 6px; background: #f8fafc; color: #728198; font-size: 12px; line-height: 1.5; }
+.admin-body.admin-portal .fm-form-card-top { margin-bottom: 21px; }
+.admin-body.admin-portal .fm-form-icon { width: 43px; height: 43px; border-color: #d9e8ea; border-radius: 12px; background: #edf6f6; }
+.admin-body.admin-portal .fm-form-card h2 { color: #20364f; font-size: 20px; line-height: 1.4; letter-spacing: -.4px; }
+.admin-body.admin-portal .fm-form-card h2 a:hover { color: #087f83; }
+.admin-body.admin-portal .fm-card-description { margin-top: 13px; color: #738298; font-size: 13px; line-height: 1.9; }
+.admin-body.admin-portal .fm-card-dates { margin-top: 2px; color: #8a96a7; font-size: 12px; }
+.admin-body.admin-portal .fm-card-bottom { gap: 8px; padding-top: 20px; border-color: #e8edf3; }
+.admin-body.admin-portal .fm-card-bottom > a:first-child { color: #7a879a; font-size: 12px; }
+.admin-body.admin-portal .fm-card-bottom strong { margin-right: 3px; color: #294159; font-size: 15px; }
+.admin-body.admin-portal .fm-card-bottom .admin-button { min-height: 35px; padding: 9px 12px; font-size: 12px; }
+.admin-body.admin-portal .fm-actions-menu > summary { display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 1px solid transparent; border-radius: 7px; color: #8190a2; letter-spacing: 1px; }
+.admin-body.admin-portal .fm-actions-menu[open] > summary, .admin-body.admin-portal .fm-actions-menu > summary:hover { border-color: #e2e8f0; background: #f5f8fb; color: #3c536c; }
+.admin-body.admin-portal .fm-actions-menu > div { top: 37px; min-width: 190px; padding: 7px; border-color: #dfe6ef; border-radius: 11px; box-shadow: 0 14px 44px #152b4520; }
+.admin-body.admin-portal .fm-actions-menu :is(a, button) { padding: 11px 12px; border-radius: 6px; color: #4f6279; font-size: 12px; }
+.admin-body.admin-portal .fm-actions-menu :is(a, button):hover { background: #f1f6f8; }
+.admin-body.admin-portal .fm-empty { padding: 64px 28px; border-style: solid; border-color: #e0e7ef; border-radius: 15px; box-shadow: 0 4px 20px #172b4303; }
+.admin-body.admin-portal .fm-empty-icon { width: 54px; height: 54px; border: 1px solid #d5e7e8; border-radius: 16px; background: #edf6f6; color: #087f83; }
+.admin-body.admin-portal .fm-empty h2 { color: #263a52; font-size: 25px; letter-spacing: -.5px; }
+.admin-body.admin-portal .fm-empty p { color: #78879b; font-size: 14px; }
+.admin-body.admin-portal .fm-form-nav { gap: 24px; padding-bottom: 18px; margin-bottom: 25px; border-bottom-color: #e0e7ef; font-size: 13px; }
+.admin-body.admin-portal .fm-form-nav a { padding-block: 7px; }
+.admin-body.admin-portal .fm-form-nav a[aria-current] { color: #087f83; box-shadow: 0 2px #087f83; }
+.admin-body.admin-portal .fm-share-banner { padding: 19px 21px; border-color: #d4e7e7; border-radius: 12px; background: #edf6f6; color: #3c7277; font-size: 13px; }
+.admin-body.admin-portal .fm-share-banner input { padding: 11px 13px; border-color: #d2e2e6; border-radius: 7px; color: #416279; font-size: 12px; }
+
+/* The builder keeps native controls and existing responsive panel behavior. */
+.admin-body.admin-portal .fb-toolbar { top: var(--admin-topbar-height, 80px); padding: 18px 20px; margin-bottom: 24px; border: 1px solid #e0e7ef; border-radius: 12px; background: #ffffffed; box-shadow: 0 3px 14px #172b4305; }
+.admin-body.admin-portal .fb-toolbar h1 { color: #223850; font-size: 22px; letter-spacing: -.6px; }
+.admin-body.admin-portal .fb-toolbar .admin-eyebrow { font-size: 9px; letter-spacing: 1.6px; }
+.admin-body.admin-portal .fb-save-state { display: inline-flex; align-items: center; gap: 6px; color: #7d8b9e; font-size: 12px; }
+.admin-body.admin-portal .fb-save-state::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #62a890; }
+.admin-body.admin-portal .fb-save-state.is-dirty { color: #9b723c; }
+.admin-body.admin-portal .fb-save-state.is-dirty::before { background: #d5a560; }
+.admin-body.admin-portal :is(.fb-toolbox, .fb-properties) { top: calc(var(--admin-topbar-height, 80px) + 120px); max-height: calc(100dvh - var(--admin-topbar-height, 80px) - 144px); border-color: #e0e7ef; border-radius: 12px; box-shadow: 0 3px 14px #172b4304; scrollbar-width: thin; scrollbar-color: #d6dfe9 transparent; }
+.admin-body.admin-portal .fb-panel-heading { padding: 20px 17px 16px; background: #f9fbfd; border-bottom-color: #e6ecf3; }
+.admin-body.admin-portal .fb-panel-heading h2 { color: #32485f; font-size: 13px; font-weight: 600; }
+.admin-body.admin-portal .fb-panel-heading p { margin-top: 6px; color: #8491a3; font-size: 12px; line-height: 1.8; }
+.admin-body.admin-portal .fb-tool-search input { min-height: 37px; padding: 9px 10px; border-color: #dfe6ef; background: #fafbfd; color: #3e536a; font-size: 12px; }
+.admin-body.admin-portal .fb-tool { padding: 10px 8px; border-color: transparent; border-radius: 7px; color: #53677e; }
+.admin-body.admin-portal .fb-tool:hover { border-color: #d2e4e7; background: #eff7f7; }
+.admin-body.admin-portal .fb-tool > span { width: 25px; height: 26px; border-radius: 6px; background: #edf4f5; color: #38848c; font-size: 15px; }
+.admin-body.admin-portal .fb-tool strong { font-size: 12px; font-weight: 500; }
+.admin-body.admin-portal .fb-tool i { color: #9aa8b8; font-size: 15px; }
+.admin-body.admin-portal .fb-tool-note { color: #8997a8; font-size: 12px; line-height: 1.8; border-color: #e8edf3; }
+.admin-body.admin-portal .fb-canvas-meta { padding: 30px; border-color: #dfe7ef; border-top-width: 3px; border-top-color: #0d8589; border-radius: 12px; box-shadow: 0 5px 20px #172b4305; }
+.admin-body.admin-portal .fb-draft-label { color: #8192a5; font-size: 10px; letter-spacing: 1.7px; }
+.admin-body.admin-portal .fb-canvas-meta input { margin-top: 16px; color: #233b54; font-size: 28px; font-weight: 600; }
+.admin-body.admin-portal .fb-canvas-meta textarea { color: #75869b; font-size: 13px; }
+.admin-body.admin-portal .fb-field-card { padding: 23px; border-color: #e0e7ef; border-left-color: transparent; border-radius: 11px; box-shadow: 0 3px 14px #172b4303; }
+.admin-body.admin-portal .fb-field-card.is-selected { border-color: #b7d5d7; border-left-color: #0d8589; box-shadow: 0 5px 22px #087f830b; }
+.admin-body.admin-portal .fb-field-card.is-drop-target { border-top: 4px solid #58b1b5; }
+.admin-body.admin-portal .fb-field-card-top > span { color: #8a98aa; font-size: 10px; letter-spacing: 1.3px; }
+.admin-body.admin-portal .fb-card-actions button { width: 27px; height: 27px; border-color: #e0e8f1; border-radius: 6px; color: #75869b; font-size: 14px; }
+.admin-body.admin-portal .fb-card-actions button:hover { background: #f1f7f8; color: #087f83; }
+.admin-body.admin-portal .fb-field-card h3 { color: #2b425b; font-size: 15px; }
+.admin-body.admin-portal .fb-control-preview { border-color: #e2e8f0; border-radius: 7px; background: #fafbfd; color: #93a0b1; font-size: 13px; }
+.admin-body.admin-portal :is(.fb-option-preview, .fb-card-help) { color: #7e8da1; font-size: 12px; }
+.admin-body.admin-portal .fb-conditional-label { padding: 5px 8px; border: 1px solid #dfebef; border-radius: 6px; background: #f3f8fa; color: #678397; font-size: 10px; }
+.admin-body.admin-portal .fb-add-question { padding: 16px; border-color: #c5d9df; border-radius: 9px; color: #4b8289; background: #fbfdfe; font-size: 13px; }
+.admin-body.admin-portal .fb-add-question:hover { border-color: #8cb9bd; background: #f1f8f8; }
+.admin-body.admin-portal :is(.fb-canvas-hint, .fb-property-note, .fb-property-empty) { color: #8a98aa; font-size: 12px; }
+.admin-body.admin-portal .fb-property-form { gap: 17px; padding: 20px 17px; }
+.admin-body.admin-portal .fb-property-form label { color: #566b82; font-size: 12px; font-weight: 600; }
+.admin-body.admin-portal .fb-property-form :is(input:not([type='checkbox']), textarea, select) { min-height: 36px; padding: 9px 10px; border-color: #dce4ee; border-radius: 7px; background: #fcfdfe; color: #3f556e; font-size: 12px; font-weight: 400; }
+.admin-body.admin-portal .fb-property-form h3 { padding-top: 20px; border-color: #e4ebf3; color: #3b536d; font-size: 12px; }
+.admin-body.admin-portal .fb-property-form code { border-color: #e4ebf3; border-radius: 6px; background: #f8fafd; color: #8190a4; font-size: 12px; }
+.admin-body.admin-portal .fb-property-form label.fm-toggle { font-size: 12px; font-weight: 400; }
+.admin-body.admin-portal .fb-option-editor { gap: 5px; }
+.admin-body.admin-portal .fb-option-editor button { padding-inline: 6px; border-color: #e0e8f0; border-radius: 5px; color: #7d8da1; }
+.admin-body.admin-portal .fb-table-importer { padding: 12px; border-color: #dce6ee; background: #f8fbfd; }
+.admin-body.admin-portal .fb-table-importer summary { font-size: 12px; }
+.admin-body.admin-portal .fb-source-filters { padding: 10px; border-color: #dfe7ef; }
+.admin-body.admin-portal .fb-source-filters legend { color: #526b81; font-size: 12px; }
+.admin-body.admin-portal .fb-mobile-tabs { gap: 9px; }
+.admin-body.admin-portal .fb-mobile-tabs button[aria-pressed='true'] { border-color: #abd0d3; background: #eaf5f5; color: #087f83; }
+
+.admin-body.admin-portal .fm-response-detail { padding: 8px 30px; }
+.admin-body.admin-portal .fm-response-detail dl > div { gap: 28px; padding-block: 25px; border-color: #e7edf4; }
+.admin-body.admin-portal .fm-response-detail dt { color: #6c7e94; font-size: 13px; }
+.admin-body.admin-portal .fm-response-detail dd { color: #2f455e; font-size: 15px; }
+.admin-body.admin-portal .fm-response-detail small { color: #8b98a9; font-size: 12px; }
+.admin-body.admin-portal .fm-number-stats :is(dt, p), .admin-body.admin-portal .fm-distribution > p { color: #7c8ca0; font-size: 12px; }
+.admin-body.admin-portal .fm-number-stats dd { color: #294158; font-size: 30px; font-variant-numeric: tabular-nums; }
+.admin-body.admin-portal .fm-distribution > div { color: #718399; font-size: 12px; }
+.admin-body.admin-portal .fm-distribution > div > i { height: 8px; background: #eef2f7; }
+.admin-body.admin-portal .fm-distribution b { background: #2a9297; }
+.admin-body.admin-portal .fm-daily-bars { background: repeating-linear-gradient(to top, transparent 0 59px, #eef2f7 59px 60px); border-bottom-color: #e1e8f0; }
+.admin-body.admin-portal .fm-daily-bars > div > span:not(.sr-only) { border-radius: 4px 4px 0 0; background: #2a9297; }
+.admin-body.admin-portal .fm-chart-dates { color: #8795a8; font-size: 12px; }
+
+.admin-body.admin-portal .admin-dialog { padding: 32px; border-color: #e0e7ef; border-radius: 16px; box-shadow: 0 28px 100px #0c192b45; }
+.admin-body.admin-portal .admin-dialog-heading h2 { color: #223850; font-size: 25px; letter-spacing: -.6px; }
+.admin-body.admin-portal .admin-dialog-actions { padding-top: 22px; margin-top: 22px; border-color: #e3eaf3; }
+.admin-body.admin-portal .fb-settings-dialog h3 { border-color: #e2eaf2; color: #3b536d; font-size: 14px; }
+.admin-body.admin-portal .fb-preview-dialog { border-color: #dce5ef; border-radius: 15px; background: #f4f6fa; }
+.admin-body.admin-portal .fb-preview-dialog > header { padding: 22px 26px; border-bottom-color: #e1e8f1; }
+.admin-body.admin-portal .fb-preview-dialog h2 { color: #253c55; font-size: 22px; }
+.admin-body.admin-portal .fm-errors { border-color: #ebd5bf; border-radius: 11px; background: #fff9f2; color: #85552e; font-size: 13px; }
+.admin-body.admin-portal .fm-danger-text { color: #b94e50 !important; }
+.admin-body.admin-portal .admin-button.fm-danger-text { border-color: #ebd9db; background: #fffafa; }
+.admin-body.admin-portal .admin-button.fm-danger-text:hover { border-color: #dbb2b6; background: #fff1f2; }
+.admin-body.admin-portal .fm-danger { border-color: #e4c1c5; background: #b64c54; color: #fff; }
+.admin-body.admin-portal .fm-danger:hover { border-color: #a53f47; background: #a53f47; color: #fff; }
+
+@media (max-width: 1100px) {
+    .admin-body.admin-portal .fb-toolbar { position: static; padding: 18px; }
+    .admin-body.admin-portal :is(.fb-toolbox, .fb-properties) { position: static; max-height: none; }
+}
+@media (max-width: 760px) {
+    .admin-body.admin-portal .fm-filters { padding: 17px; gap: 12px; }
+    .admin-body.admin-portal .fm-form-nav { gap: 17px; font-size: 12px; }
+    .admin-body.admin-portal .fm-share-banner { padding: 16px; }
+    .admin-body.admin-portal .admin-dialog { padding: 24px; }
+}
+@media (max-width: 560px) {
+    .admin-body.admin-portal .fm-create-card:not(.contract-editor) { padding: 28px 22px; border-radius: 13px; }
+    .admin-body.admin-portal .fm-create-card:not(.contract-editor) > h1 { font-size: 27px; }
+    .admin-body.admin-portal .fm-form-card { padding: 23px; }
+    .admin-body.admin-portal .fb-canvas-meta { padding: 23px; }
+    .admin-body.admin-portal .fb-canvas-meta input { font-size: 25px; }
+    .admin-body.admin-portal .fb-field-card { padding: 18px; }
+    .admin-body.admin-portal .fb-toolbar { padding: 16px; border-radius: 10px; }
+    .admin-body.admin-portal .fm-response-detail { padding-inline: 22px; }
+    .admin-body.admin-portal .fm-response-detail dl > div { grid-template-columns: 1fr; gap: 10px; }
+}

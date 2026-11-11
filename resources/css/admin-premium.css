@@ -1,0 +1,144 @@
+/* Shared visual language for the administrative workspace. */
+.admin-body.admin-portal {
+    --admin-ink: #182b43;
+    --admin-muted: #68788e;
+    --admin-line: #e3e9f1;
+    --admin-accent: #087f83;
+    --admin-shadow: 0 4px 18px #152b4506, 0 1px 3px #152b4503;
+    background: #f5f7fb;
+    color: var(--admin-ink);
+    -webkit-font-smoothing: antialiased;
+}
+.admin-body.admin-portal .admin-sidebar { background: #112237; border-right-color: #1d334a; padding: 30px 20px 24px; }
+.admin-body.admin-portal .admin-brand { margin: 2px 12px 34px; gap: 11px; }
+.admin-body.admin-portal .admin-brand .brand-name { color: #fff; letter-spacing: -1px; }
+.admin-body.admin-portal .admin-brand .brand-dot { color: #4cc4c7; }
+.admin-body.admin-portal .admin-workspace { padding: 15px 12px; border-color: #ffffff12; background: #ffffff03; border-radius: 10px; }
+.admin-body.admin-portal .admin-workspace strong { font-size: 13px; letter-spacing: -.1px; }
+.admin-body.admin-portal .admin-workspace div > span { margin-top: 5px; color: #94a8bf; font-size: 11px; }
+.admin-body.admin-portal .admin-workspace-mark { background: #ffffff08; }
+.admin-body.admin-portal .admin-nav-caption { font-size: 9px; letter-spacing: 2px; color: #8098b3; margin-top: 34px; }
+.admin-body.admin-portal .admin-nav { gap: 6px; }
+.admin-body.admin-portal .admin-nav > a { min-height: 46px; color: #aebed2; font-size: 13px; border-radius: 8px; padding: 12px 14px; }
+.admin-body.admin-portal .admin-nav > a:hover { color: #fff; background: #ffffff07; }
+.admin-body.admin-portal .admin-nav > a.is-active { color: #fff; border-color: #ffffff10; background: #1d354a; box-shadow: inset 3px 0 #4ac6c6; }
+.admin-body.admin-portal .admin-nav .admin-icon { width: 18px; height: 18px; opacity: .9; }
+.admin-body.admin-portal .admin-demo-card { background: #0d1c2d; border-color: #24384d; padding: 18px 16px; border-radius: 10px; }
+.admin-body.admin-portal .admin-demo-card p { color: #97abc2; font-size: 12px; line-height: 1.85; }
+.admin-body.admin-portal .admin-demo-card > span { font-size: 10px; letter-spacing: .2px; }
+.admin-body.admin-portal .admin-website-link { color: #a5b7cc; font-size: 12px; }
+.admin-body.admin-portal .admin-website-link:hover { color: #fff; }
+.admin-body.admin-portal .admin-topbar { min-height: 78px; padding-block: 18px; background: #ffffffef; border-color: var(--admin-line); box-shadow: 0 1px 8px #12233802; }
+.admin-body.admin-portal .admin-breadcrumb { font-size: 12px; gap: 13px; color: #7e8b9d; }
+.admin-body.admin-portal .admin-breadcrumb strong { color: #34475e; font-weight: 600; }
+.admin-body.admin-portal .admin-profile { gap: 11px; }
+.admin-body.admin-portal .admin-profile > span { border-radius: 11px; width: 37px; height: 37px; font-size: 12px; background: #edf5f5; border-color: #d8e8e9; }
+.admin-body.admin-portal .admin-profile strong { font-size: 12px; }
+.admin-body.admin-portal .admin-profile small { font-size: 10px; letter-spacing: .2px; }
+.admin-body.admin-portal .admin-main { width: 100%; max-width: 1660px; margin-inline: auto; padding-top: 34px; padding-bottom: 36px; }
+.admin-body.admin-portal .admin-page-heading { align-items: center; border-bottom: 0; padding-bottom: 0; margin-bottom: 28px; }
+.admin-body.admin-portal .admin-page-heading h1 { font-size: clamp(29px, 2.5vw, 36px); font-weight: 600; letter-spacing: -1.2px; line-height: 1.2; }
+.admin-body.admin-portal .admin-eyebrow { font-size: 9px; letter-spacing: 1.9px; margin-bottom: 10px; color: #277b7f; }
+.admin-body.admin-portal .admin-page-heading > div > p:last-child { max-width: 650px; color: #738197; font-size: 13px; line-height: 1.8; }
+.admin-body.admin-portal .admin-button { min-height: 40px; padding: 11px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; border-color: #dbe3ed; color: #42546c; box-shadow: 0 1px 2px #132a4405; }
+.admin-body.admin-portal .admin-button:hover { background: #f6f8fb; border-color: #adbdcf; }
+.admin-body.admin-portal .admin-button-primary { background: #087f83; border-color: #087f83; color: #fff; box-shadow: 0 3px 8px #087f831a; }
+.admin-body.admin-portal .admin-button-primary:hover { background: #076d72; border-color: #076d72; }
+.admin-body.admin-portal .admin-button:disabled { opacity: .5; cursor: not-allowed; }
+.admin-body.admin-portal .admin-card { border-radius: 13px; border-color: var(--admin-line); box-shadow: var(--admin-shadow); }
+.admin-body.admin-portal .admin-card-heading { padding: 23px 24px 20px; }
+.admin-body.admin-portal .admin-card h2 { color: #25394f; font-size: 16px; font-weight: 600; }
+.admin-body.admin-portal .admin-card-heading p { color: #7b889b; font-size: 12px; }
+.admin-body.admin-portal :is(.fm-stack, .fm-filters) label { color: #46596f; font-size: 12px; font-weight: 600; gap: 9px; }
+.admin-body.admin-portal :is(.fm-stack input:not([type='checkbox']), .fm-stack textarea, .fm-stack select, .fm-filters input, .fm-filters select) { border-radius: 8px; border-color: #dce4ee; background: #fcfdff; font-size: 13px; font-weight: 400; color: #30455c; padding: 12px 14px; min-height: 43px; box-shadow: 0 1px 2px #12233802; }
+.admin-body.admin-portal :is(input, textarea)::placeholder { color: #9aa5b5; font-weight: 400; }
+.admin-body.admin-portal :is(.fm-stack input, .fm-stack textarea, .fm-stack select):focus { background: #fff; border-color: #79b1b4; outline: 3px solid #087f8312; outline-offset: 1px; }
+.admin-body.admin-portal input[type='checkbox'] { accent-color: #087f83; }
+.admin-body.admin-portal .admin-page-footer { font-size: 10px; color: #8b97a8; border-top-color: #e5ebf3; padding-top: 17px; }
+
+/* Contract editor: distinct sections with a persistent save action. */
+.admin-body.admin-portal .contract-editor-page { width: 100%; max-width: 1280px; margin-inline: auto; }
+.admin-body.admin-portal .contract-back-link { display: inline-flex; align-items: center; gap: 7px; color: #73839a; font-size: 11px; margin-bottom: 22px; }
+.admin-body.admin-portal .contract-back-link .admin-icon { width: 14px; height: 14px; }
+.admin-body.admin-portal .contract-editor-heading { margin-bottom: 26px; }
+.admin-body.admin-portal .contract-workspace-badge { display: inline-flex; align-items: center; gap: 7px; flex: none; padding: 8px 11px; border: 1px solid #dfe8ef; border-radius: 7px; background: #fff; color: #718396; font-size: 10px; }
+.admin-body.admin-portal .contract-workspace-badge .admin-icon { width: 14px; height: 14px; color: #388b8e; }
+.admin-body.admin-portal .fm-create-card.contract-editor-premium { max-width: none; margin: 0; padding: 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+.admin-body.admin-portal .contract-editor-form { gap: 22px; }
+.admin-body.admin-portal .contract-section { min-width: 0; padding: 0; margin: 0; border: 1px solid #e1e7f0; border-radius: 13px; background: #fff; box-shadow: var(--admin-shadow); }
+.admin-body.admin-portal .contract-section-heading { display: flex; align-items: center; gap: 14px; padding: 23px 26px; border-bottom: 1px solid #edf1f6; }
+.admin-body.admin-portal .contract-section-number { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: 9px; border: 1px solid #dce9ec; background: #f1f7f8; color: #34868b; font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.admin-body.admin-portal .contract-section-heading h2 { margin: 0; font-size: 15px; font-weight: 600; color: #283c53; letter-spacing: -.2px; }
+.admin-body.admin-portal .contract-section-heading p { margin: 5px 0 0; font-size: 12px; color: #7a889b; line-height: 1.6; }
+.admin-body.admin-portal .contract-section-tag { margin-left: auto; border: 1px solid #e2e9f1; border-radius: 5px; padding: 5px 8px; color: #8190a3; font-size: 10px; white-space: nowrap; }
+.admin-body.admin-portal .contract-section-body { display: grid; gap: 20px; padding: 25px 26px; }
+.admin-body.admin-portal .contract-section-body > label { position: relative; }
+.admin-body.admin-portal .contract-optional { position: absolute; right: 0; top: 0; color: #9aa5b3; font-size: 10px; font-weight: 400; }
+.admin-body.admin-portal .contract-section-body.contract-term { background: #fff; border: 0; border-radius: 0 0 13px 13px; margin: 0; gap: 18px; }
+.admin-body.admin-portal .contract-term-settings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.admin-body.admin-portal .contract-section-note { display: flex; align-items: flex-start; gap: 7px; margin: 0; color: #8190a3; font-size: 11px; line-height: 1.8; }
+.admin-body.admin-portal .contract-section-note .admin-icon { flex: none; width: 14px; height: 14px; margin-top: 2px; color: #7da1a7; }
+.admin-body.admin-portal fieldset.contract-section.contract-assignments { display: block; padding: 0; border: 1px solid #e1e7f0; border-radius: 13px; min-width: 0; }
+.admin-body.admin-portal fieldset.contract-section > legend.sr-only { position: absolute; padding: 0; width: 1px; height: 1px; border: 0; }
+.admin-body.admin-portal .contract-assignment-body { padding: 24px 26px 0; }
+.admin-body.admin-portal .contract-assignment-filters { grid-template-columns: minmax(0, 1fr) minmax(150px, 210px); gap: 18px; }
+.admin-body.admin-portal .contract-search-control { position: relative; display: flex; align-items: center; }
+.admin-body.admin-portal .contract-search-control .admin-icon { position: absolute; left: 13px; width: 16px; height: 16px; color: #8b9bae; pointer-events: none; }
+.admin-body.admin-portal .contract-assignment-filters .contract-search-control input { padding-left: 39px; }
+.admin-body.admin-portal .contract-assignment-guidance { margin: 15px 0 20px; color: #8390a1; font-size: 11px; line-height: 1.8; }
+.admin-body.admin-portal .contract-table-hint { display: none; align-items: center; gap: 6px; color: #8192a7; font-size: 10px; }
+.admin-body.admin-portal .contract-table-hint .admin-icon { width: 13px; height: 13px; }
+.admin-body.admin-portal .contract-assignments .clients-table-container { position: relative; max-height: 520px; border-color: #e4eaf2; border-radius: 9px; background: #fff; }
+.admin-body.admin-portal .contract-assignments .clients-table { min-width: 900px; }
+.admin-body.admin-portal .contract-assignments .clients-table thead th { font-size: 10px; padding: 14px 16px; color: #8190a4; background: #f8fafc; letter-spacing: .9px; }
+.admin-body.admin-portal .contract-assignments .clients-table tbody :is(th, td) { padding: 20px 16px; border-color: #eaf0f5; vertical-align: top; }
+.admin-body.admin-portal .contract-assignments .clients-table tbody th { min-width: 250px; }
+.admin-body.admin-portal .contract-assignments tr:has(input:checked) { background: #f3fafa; }
+.admin-body.admin-portal .contract-assignments tr:has(input:checked) > td:first-child { box-shadow: inset 3px 0 #299d9e; }
+.admin-body.admin-portal .contract-assignments input[type='checkbox'] { width: 16px; height: 16px; margin-top: 7px; border-radius: 4px; }
+.admin-body.admin-portal .contract-client-identity { display: flex; align-items: flex-start; gap: 11px; }
+.admin-body.admin-portal .contract-client-avatar { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border: 1px solid #dce7ec; border-radius: 9px; background: #f3f7fa; color: #5d8090; font-size: 10px; font-weight: 600; }
+.admin-body.admin-portal .contract-client-identity strong { display: block; margin-top: 2px; font-size: 13px; font-weight: 600; color: #334c61; }
+.admin-body.admin-portal .contract-client-identity .contract-account-email { font-size: 11px; margin-top: 6px; color: #8a98a9; }
+.admin-body.admin-portal .contract-assigned-label { display: block; margin-top: 10px; color: #3c8f8f; font-size: 10px; font-weight: 500; }
+.admin-body.admin-portal .contract-role-label { display: inline-flex; padding: 5px 7px; border: 1px solid #e4eaf1; border-radius: 5px; color: #77889c; font-size: 10px; }
+.admin-body.admin-portal .contract-assignments .admin-status { margin-top: 1px; font-size: 11px; }
+.admin-body.admin-portal .contract-assignment-duration { min-width: 320px; width: 340px; }
+.admin-body.admin-portal .contract-assignment-duration select { min-height: 39px; font-size: 12px; padding: 9px 11px; background: #fff; }
+.admin-body.admin-portal .contract-assignment-dates { margin-top: 10px; padding: 12px; border: 1px solid #dce9eb; border-radius: 8px; background: #fff; gap: 9px; }
+.admin-body.admin-portal .contract-assignment-dates label { gap: 6px; font-size: 10px; font-weight: 500; }
+.admin-body.admin-portal .contract-assignment-dates input { min-height: 37px; font-size: 12px; padding: 8px 6px; background: #fafcfd; }
+.admin-body.admin-portal .contract-assignment-duration .fm-muted { font-size: 10px; color: #8c9ba9; margin-top: 8px; }
+.admin-body.admin-portal .contract-assignment-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 16px 0; }
+.admin-body.admin-portal .contract-assignment-footer p { margin: 0; color: #527580; font-size: 11px; font-weight: 500; }
+.admin-body.admin-portal .contract-assignment-footer > span { color: #9ba7b5; font-size: 10px; }
+.admin-body.admin-portal .contract-save-bar { position: sticky; bottom: 16px; z-index: 5; display: flex; align-items: center; justify-content: space-between; margin: 0; padding: 16px 20px; border: 1px solid #dbe4ed; border-radius: 11px; background: #fffffff5; box-shadow: 0 8px 30px #1223380c; backdrop-filter: blur(12px); }
+.admin-body.admin-portal .contract-save-bar p { display: flex; align-items: center; gap: 7px; margin: 0; font-size: 11px; color: #8493a5; }
+.admin-body.admin-portal .contract-save-bar p .admin-icon { width: 14px; height: 14px; }
+.admin-body.admin-portal .contract-save-bar > div { display: flex; align-items: center; gap: 10px; }
+@media (min-width: 1251px) { .admin-body.admin-portal .admin-layout { grid-template-columns: 252px minmax(0, 1fr); } }
+@media (max-width: 1020px) {
+    .admin-body.admin-portal .admin-page-heading { align-items: flex-start; }
+    .admin-body.admin-portal .contract-table-hint { display: flex; }
+}
+@media (max-width: 760px) {
+    .admin-body.admin-portal .admin-sidebar { padding: 20px; }
+    .admin-body.admin-portal .admin-topbar { min-height: 72px; padding-block: 15px; }
+    .admin-body.admin-portal .admin-main { padding-top: 25px; }
+    .admin-body.admin-portal .admin-page-heading h1 { font-size: 29px; }
+    .admin-body.admin-portal .contract-editor-heading { flex-direction: column; gap: 15px; }
+    .admin-body.admin-portal .contract-section-heading { padding: 20px; gap: 10px; }
+    .admin-body.admin-portal .contract-section-body, .admin-body.admin-portal .contract-assignment-body { padding: 20px; }
+    .admin-body.admin-portal .contract-assignment-body { padding-bottom: 0; }
+    .admin-body.admin-portal .contract-section-tag { display: none; }
+    .admin-body.admin-portal .contract-assignment-footer > span { font-size: 9px; }
+    .admin-body.admin-portal .contract-save-bar { bottom: 10px; padding: 13px 14px; }
+}
+@media (max-width: 560px) {
+    .admin-body.admin-portal .contract-term-settings, .admin-body.admin-portal .contract-assignment-filters { grid-template-columns: 1fr; }
+    .admin-body.admin-portal .contract-save-bar { flex-wrap: wrap; gap: 12px; }
+    .admin-body.admin-portal .contract-save-bar > div { width: 100%; }
+    .admin-body.admin-portal .contract-save-bar .admin-button { flex: 1; }
+}
+
+.admin-body.admin-portal .admin-main :is(input, textarea, select, button, a, summary):focus-visible { outline: 3px solid #168b93; outline-offset: 3px; }

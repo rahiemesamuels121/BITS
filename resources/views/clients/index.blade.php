@@ -15,7 +15,7 @@
             <tbody>
                 @forelse($clients as $client)
                     <tr>
-                        <th scope="row">{{ $client->name }}</th><td>{{ $client->email }}</td>
+                        <th scope="row"><div class="pm-client-identity"><span class="pm-client-avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr($client->name, 0, 2)) }}</span><span>{{ $client->name }}</span></div></th><td>{{ $client->email }}</td>
                         <td><span class="fm-status {{ $client->is_active ? 'fm-status-published' : 'fm-status-archived' }}">{{ $client->is_active ? 'Active' : 'Inactive' }}</span></td>
                         <td><time datetime="{{ $client->created_at->toDateString() }}">{{ $client->created_at->format('M j, Y') }}</time></td>
                         <td><div class="clients-table-actions">

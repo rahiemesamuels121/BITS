@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientResponseController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Forms\FormOptionSourceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -13,6 +15,11 @@ Route::get('/', function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware('auth')
     ->name('dashboard');
+
+Route::middleware('auth')->prefix('dashboard/responses')->name('clients.responses.')->group(function () {
+    Route::get('/{submission}', [ClientResponseController::class, 'show'])->name('show');
+    Route::get('/{submission}/files/{field}', [ClientResponseController::class, 'download'])->name('file');
+});
 
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])
     ->middleware('guest')
@@ -39,3 +46,7 @@ Route::middleware(['auth', 'can:manage-clients'])->prefix('dashboard/clients')->
     Route::delete('/{client}', [ClientController::class, 'destroy'])->name('destroy');
     Route::patch('/{client}/status', [ClientController::class, 'updateStatus'])->name('status');
 });
+
+Route::post('/dashboard/form-option-sources', FormOptionSourceController::class)
+    ->middleware(['auth', 'can:manage-clients'])
+    ->name('forms.option-sources');

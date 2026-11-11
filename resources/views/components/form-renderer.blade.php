@@ -33,7 +33,7 @@
                     @if($field['type'] === 'textarea')
                         <textarea id="{{ $id }}" name="answers[{{ $key }}]" placeholder="{{ $field['placeholder'] }}" rows="4" minlength="{{ $rules['min_length'] ?? 0 }}" maxlength="{{ $rules['max_length'] ?? 10000 }}" @required($required && $visible) @disabled(!$visible)>{{ is_scalar($value) ? $value : '' }}</textarea>
                     @elseif($field['type'] === 'select')
-                        <select id="{{ $id }}" name="answers[{{ $key }}]" @required($required && $visible) @disabled(!$visible)><option value="">{{ $field['placeholder'] ?: 'Select an option' }}</option>@foreach($field['options'] ?? [] as $option)<option value="{{ $option }}" @selected($value === $option)>{{ $option }}</option>@endforeach</select>
+                        <select id="{{ $id }}" name="answers[{{ $key }}]" @required($required && $visible) @disabled(!$visible)><option value="">{{ $field['placeholder'] ?: 'Select an option' }}</option>@foreach($field['options'] ?? [] as $option)<option value="{{ $option }}" @selected($value === $option)>{{ $field['option_labels'][$option] ?? $option }}</option>@endforeach</select>
                     @elseif(in_array($field['type'], ['radio','checkboxes','boolean']))
                         @php($choices = $field['type'] === 'boolean' ? ['1' => 'Yes', '0' => 'No'] : array_combine($field['options'] ?? [], $field['options'] ?? []))
                         @foreach($choices as $option => $label)

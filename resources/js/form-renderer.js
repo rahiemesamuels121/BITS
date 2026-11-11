@@ -164,7 +164,7 @@ export function buildPreview(schema, settings) {
             input.id = id; input.name = name;
             if (field.type === 'select') {
                 const empty = element('option','',field.placeholder || 'Select an option'); empty.value = ''; input.append(empty);
-                (field.options ?? []).forEach(value => { const option = element('option','',value); option.value = value; input.append(option); });
+                (field.options ?? []).forEach(value => { const option = element('option','',field.option_labels?.[value] ?? value); option.value = value; input.append(option); });
             } else if (field.type === 'textarea') input.rows = 4;
             else input.type = ({ phone:'tel', file:'file', number:'number', email:'email', date:'date', time:'time' })[field.type] || 'text';
             if (field.type !== 'file') input.value = field.default_value === null || field.default_value === undefined ? '' : scalar(field.default_value);
