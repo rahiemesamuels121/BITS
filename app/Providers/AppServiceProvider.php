@@ -29,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Form::class, FormPolicy::class);
         Gate::define('manage-clients', fn (User $user) => $user->isAdmin());
         Gate::define('manage-contracts', fn (User $user) => $user->isAdmin());
+        RateLimiter::for('login', fn (Request $request) => Limit::perMinute(20)->by($request->ip()));
         RateLimiter::for('form-submissions', fn (Request $request) => Limit::perMinute(20)->by($request->ip().'|'.$request->route('slug')));
     }
 }

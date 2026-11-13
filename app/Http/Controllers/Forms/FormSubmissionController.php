@@ -7,9 +7,9 @@ use App\Models\Form;
 use App\Models\FormSubmission;
 use App\Services\Forms\FormReportService;
 use App\Services\Forms\FormSubmissionService;
+use App\Services\Forms\SubmissionAttachmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 
 class FormSubmissionController extends Controller
 {
@@ -38,16 +38,12 @@ class FormSubmissionController extends Controller
         return to_route('forms.submissions.index', $form)->with('status', 'Response deleted.');
     }
 
-    public function download(Form $form, FormSubmission $submission, string $field)
+    public function download(Form $form, FormSubmission $submission, string $field, SubmissionAttachmentService $attachments)
     {
         Gate::authorize('view', $form);
         abort_unless((int) $submission->form_id === (int) $form->id, 404);
-        $file = $submission->data[$field] ?? null;
-        abort_unless(is_array($file) && ($file['kind'] ?? null) === 'file' && str_starts_with($file['path'] ?? '', 'forms/'.$form->id.'/'), 404);
-        abort_unless(Storage::disk('local')->exists($file['path']), 404);
-        $filename = preg_replace('/[^\pL\pN._ -]/u', '_', basename($file['name']));
 
-        return Storage::disk('local')->download($file['path'], $filename ?: 'attachment', ['X-Content-Type-Options' => 'nosniff']);
+        return $attachments->download($submission, $field);
     }
 
     public function export(Request $request, Form $form, FormReportService $reports)

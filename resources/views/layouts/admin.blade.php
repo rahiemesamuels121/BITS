@@ -12,9 +12,9 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/bits-logo.svg') }}">
     </head>
-    <body class="admin-body forms-workspace {{ $clientWorkspace ? 'client-portal' : 'admin-portal' }}">
+    <body data-private-page class="admin-body forms-workspace {{ $clientWorkspace ? 'client-portal' : 'admin-portal' }}">
         <a class="skip-link" href="#admin-main">Skip to dashboard</a>
-        <div class="admin-layout" data-admin-dashboard>
+        <div class="admin-layout">
             <aside class="admin-sidebar" id="admin-sidebar" aria-label="Dashboard navigation">
                 <a class="brand admin-brand" href="{{ route('home') }}">
                     @include('partials.brand-mark')
@@ -25,9 +25,9 @@
                 <nav class="admin-nav" aria-label="{{ $clientWorkspace ? 'My account' : 'Administration' }}">
                     @if($clientWorkspace)
                         <a href="{{ route('dashboard') }}" @if(request()->routeIs('dashboard')) class="is-active" aria-current="page" @endif>@include('partials.admin.icon', ['name' => 'grid'])<span>My dashboard</span></a>
-                        <a href="{{ route('dashboard') }}#account-details">@include('partials.admin.icon', ['name' => 'users'])<span>Account details</span></a>
-                        <a href="{{ route('dashboard') }}#my-contracts">@include('partials.admin.icon', ['name' => 'ticket'])<span>My contracts</span></a>
-                        <a href="{{ route('dashboard') }}#my-responses">@include('partials.admin.icon', ['name' => 'activity'])<span>My responses</span></a>
+                        <a href="{{ route('clients.account') }}" @if(request()->routeIs('clients.account')) class="is-active" aria-current="page" @endif>@include('partials.admin.icon', ['name' => 'users'])<span>Account details</span></a>
+                        <a href="{{ route('clients.contracts') }}" @if(request()->routeIs('clients.contracts')) class="is-active" aria-current="page" @endif>@include('partials.admin.icon', ['name' => 'ticket'])<span>My contracts</span></a>
+                        <a href="{{ route('clients.responses.index') }}" @if(request()->routeIs('clients.responses.*')) class="is-active" aria-current="page" @endif>@include('partials.admin.icon', ['name' => 'activity'])<span>My responses</span></a>
                     @else
                     <a href="{{ route('dashboard') }}" @if(request()->routeIs('dashboard')) class="is-active" aria-current="page" @endif>@include('partials.admin.icon', ['name' => 'activity'])<span>Overview</span></a>
                     <a href="{{ route('forms.index') }}" @if(request()->routeIs('forms.*')) class="is-active" aria-current="page" @endif>
@@ -63,7 +63,7 @@
             <div class="admin-main-shell">
                 <header class="admin-topbar">
                     <button class="admin-icon-button admin-mobile-toggle" type="button" aria-label="Toggle dashboard navigation" aria-expanded="false" aria-controls="admin-sidebar" data-admin-menu data-admin-js>@include('partials.admin.icon', ['name' => 'menu'])</button>
-                    <div class="admin-breadcrumb">{{ $clientWorkspace ? 'My account' : 'Workspace' }} <span>/</span> <strong data-admin-breadcrumb>{{ request()->routeIs('clients.responses.*') ? 'Response details' : (request()->routeIs('contracts.*') ? 'Contracts' : (request()->routeIs('clients.*') ? 'Clients' : (request()->routeIs('forms.*') ? 'Form Management' : ($clientWorkspace ? 'My dashboard' : 'Overview')))) }}</strong></div>
+                    <div class="admin-breadcrumb">{{ $clientWorkspace ? 'My account' : 'Workspace' }} <span>/</span> <strong data-admin-breadcrumb>{{ request()->routeIs('clients.responses.*') ? (request()->routeIs('clients.responses.index') ? 'My responses' : 'Response details') : (request()->routeIs('clients.account') ? 'Account details' : (request()->routeIs('clients.contracts', 'contracts.*') ? 'Contracts' : (request()->routeIs('clients.*') ? 'Clients' : (request()->routeIs('forms.*') ? 'Form Management' : ($clientWorkspace ? 'My dashboard' : 'Overview'))))) }}</strong></div>
                     <div class="admin-profile"><span>{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 2)) }}</span><div><strong>{{ auth()->user()->name }}</strong><small>{{ auth()->user()->role?->name ?? 'Account' }}</small></div></div>
                 </header>
                 <main class="admin-main" id="admin-main">
@@ -78,7 +78,6 @@
                 <footer class="admin-page-footer"><span>{{ $clientWorkspace ? 'BITS Client Portal' : 'BITS Systems Admin' }}</span><span>{{ $clientWorkspace ? 'Account details · My contracts' : (request()->routeIs('contracts.*') ? 'Contract Management · Private workspace' : (request()->routeIs('clients.*') ? 'Client Management · Private workspace' : (request()->routeIs('forms.*') ? 'Form Management · Private workspace' : 'Workspace overview · Live data'))) }}</span></footer>
             </div>
         </div>
-        <div class="admin-toast" role="status" data-admin-toast hidden></div>
         @stack('dialogs')
         @stack('dashboard-data')
         @if(request()->routeIs('forms.*', 'clients.*', 'contracts.*'))

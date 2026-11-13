@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
@@ -110,6 +112,67 @@ class AuthenticationTest extends TestCase
             ->assertSessionHas('_token');
 
         $this->assertGuest();
+    }
+
+    public function test_logout_destroys_the_database_session_and_prevents_cookie_replay(): void
+    {
+        config(['session.driver' => 'database']);
+        $user = User::factory()->create(['password' => 'correct-password']);
+        $guard = Auth::guard('web');
+        $recaller = $guard->getRecallerName();
+        $login = $this->post(route('login.store'), [
+            'email' => $user->email, 'password' => 'correct-password', 'remember' => true,
+        ])->assertRedirect(route('dashboard'));
+        $oldCookie = $login->getCookie($recaller)->getValue();
+        $oldToken = $user->fresh()->getRememberToken();
+        $oldId = session()->getId();
+        $csrf = session()->token();
+        $this->assertDatabaseHas('sessions', ['id' => $oldId, 'user_id' => $user->id]);
+
+        $this->withCookie(config('session.cookie'), $oldId)
+            ->withCookie($recaller, $oldCookie)
+            ->withSession(['private-data' => 'secret'])
+            ->post(route('logout'))->assertRedirect(route('home'))
+            ->assertCookieExpired($recaller)->assertSessionMissing('private-data');
+
+        $this->assertGuest();
+        $this->assertDatabaseMissing('sessions', ['id' => $oldId]);
+        $this->assertNotSame($oldId, session()->getId());
+        $this->assertNotSame($csrf, session()->token());
+        $this->assertNotSame($oldToken, $user->fresh()->getRememberToken());
+
+        // Resolve a fresh guard, as a new HTTP worker would, and replay both old cookies.
+        Auth::forgetGuards();
+        $this->withCookie(config('session.cookie'), $oldId)->withCookie($recaller, $oldCookie)
+            ->get(route('dashboard'))->assertRedirect(route('login'));
+        $this->assertGuest();
+    }
+
+    public function test_logout_requires_post_and_a_valid_csrf_token(): void
+    {
+        $this->app->bind(PreventRequestForgery::class, fn ($app) => new class($app, $app['encrypter']) extends PreventRequestForgery
+        {
+            protected function runningUnitTests()
+            {
+                return false;
+            }
+        });
+        $this->actingAs(User::factory()->create())->get(route('dashboard'))->assertOk();
+        $this->get(route('logout'))->assertMethodNotAllowed();
+        $this->post(route('logout'))->assertStatus(419);
+        $this->assertAuthenticated();
+        $this->post(route('logout'), ['_token' => session()->token()])->assertRedirect(route('home'));
+        $this->assertGuest();
+    }
+
+    public function test_login_is_rate_limited_across_different_email_addresses_from_one_ip(): void
+    {
+        for ($attempt = 0; $attempt < 20; $attempt++) {
+            $this->post(route('login.store'), ['email' => 'missing'.$attempt.'@example.com', 'password' => 'wrong'])
+                ->assertSessionHasErrors('email');
+        }
+        $this->post(route('login.store'), ['email' => 'another@example.com', 'password' => 'wrong'])
+            ->assertTooManyRequests();
     }
 
     public function test_authenticated_users_are_redirected_away_from_the_login_page(): void

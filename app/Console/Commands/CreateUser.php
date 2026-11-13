@@ -56,7 +56,7 @@ class CreateUser extends Command
         ];
 
         $validator = Validator::make($passwords, [
-            'password' => ['required', 'string', 'confirmed', Password::min(12)],
+            'password' => ['required', 'string', 'max:72', 'confirmed', Password::min(12)],
         ]);
 
         if ($validator->fails()) {

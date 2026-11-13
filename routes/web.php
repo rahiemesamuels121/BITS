@@ -17,15 +17,20 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
 Route::middleware('auth')->prefix('dashboard/responses')->name('clients.responses.')->group(function () {
+    Route::get('/', [ClientResponseController::class, 'index'])->name('index');
+    Route::get('/export', [ClientResponseController::class, 'index'])->name('export');
     Route::get('/{submission}', [ClientResponseController::class, 'show'])->name('show');
     Route::get('/{submission}/files/{field}', [ClientResponseController::class, 'download'])->name('file');
 });
+
+Route::get('/dashboard/account', [DashboardController::class, 'account'])->middleware('auth')->name('clients.account');
+Route::get('/dashboard/my-contracts', [DashboardController::class, 'contracts'])->middleware('auth')->name('clients.contracts');
 
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])
     ->middleware('guest')
     ->name('login');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-    ->middleware('guest')
+    ->middleware(['guest', 'throttle:login'])
     ->name('login.store');
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')

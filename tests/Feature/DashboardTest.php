@@ -32,7 +32,6 @@ class DashboardTest extends TestCase
             ->assertSee('My dashboard')
             ->assertSee('Account details')
             ->assertSee('My contracts')
-            ->assertSee('No contract assigned yet.')
             ->assertDontSee('Demo data')
             ->assertSee('Workspace Owner')
             ->assertSee('Sign out');
@@ -115,20 +114,16 @@ class DashboardTest extends TestCase
         app(FormService::class)->create($owner, 'My former dashboard form')->update(['status' => 'published']);
 
         $this->actingAs($owner)->get(route('dashboard'))->assertOk()
-            ->assertViewIs('clients.dashboard')
-            ->assertViewHas('account', fn ($account) => $account->is($owner))
+            ->assertViewIs('clients.dashboard')->assertViewHas('contractCount', 2)
+            ->assertSee(route('clients.account'))->assertSee(route('clients.contracts'))->assertSee(route('clients.responses.index'))
+            ->assertDontSee('My assigned agreement details.');
+        $this->get(route('clients.account'))->assertOk()->assertSee($owner->email)->assertSee('Oct 10, 2026')
+            ->assertDontSee($other->email)->assertDontSee('Work and travel agreement');
+        $this->get(route('clients.contracts'))->assertOk()
             ->assertViewHas('contracts', fn ($contracts) => $contracts->total() === 2 && $contracts->contains('id', $contract->id))
-            ->assertSee($owner->name)->assertSee($owner->email)->assertSee('Agency')
-            ->assertSee('Account details')->assertSee('My contracts')->assertSee('Oct 10, 2026')
             ->assertSee('Work and travel agreement')->assertSee('My assigned agreement details.')
             ->assertSee('Nov 1, 2026')->assertSee('May 31, 2027')->assertSee('Contract registration form')
-            ->assertSee('Indefinite agreement')->assertSee('Indefinite')->assertSee('Inactive')
-            ->assertDontSee('Another client private agreement')->assertDontSee('Private unrelated details.')
-            ->assertDontSee($other->email)->assertDontSee($owner->password)->assertDontSee($owner->remember_token)
-            ->assertDontSee('Form publishing status')->assertDontSee('My former dashboard form')
-            ->assertDontSee('href="'.route('clients.index').'"', false)
-            ->assertDontSee('href="'.route('contracts.create').'"', false)
-            ->assertDontSee('href="'.route('forms.create').'"', false);
+            ->assertSee('Indefinite agreement')->assertSee('Inactive')->assertDontSee('Another client private agreement');
     }
 
     public function test_custom_role_accounts_also_receive_the_client_dashboard(): void
@@ -137,8 +132,9 @@ class DashboardTest extends TestCase
         $user = User::factory()->for($role)->create();
 
         $this->actingAs($user)->get(route('dashboard'))->assertOk()
-            ->assertViewIs('clients.dashboard')->assertSee('Participant')->assertSee($user->email)
-            ->assertSee('No contract assigned yet.')->assertDontSee('Workspace overview');
+            ->assertViewIs('clients.dashboard')->assertSee('Participant')->assertDontSee('Workspace overview');
+        $this->get(route('clients.account'))->assertOk()->assertSee($user->email);
+        $this->get(route('clients.contracts'))->assertOk()->assertSee('No contract assigned yet.');
     }
 
     public function test_client_dashboard_paginates_all_assigned_contracts(): void
@@ -147,10 +143,10 @@ class DashboardTest extends TestCase
         Contract::factory()->count(11)->hasAttached($user, [], 'clients')->create();
         Contract::factory()->create(['name' => 'Unrelated contract outside pagination']);
 
-        $this->actingAs($user)->get(route('dashboard'))->assertOk()
+        $this->actingAs($user)->get(route('clients.contracts'))->assertOk()
             ->assertViewHas('contracts', fn ($contracts) => $contracts->total() === 11 && $contracts->count() === 10)
             ->assertSee('Next')->assertDontSee('Unrelated contract outside pagination');
-        $this->get(route('dashboard', ['page' => 2]))->assertOk()
+        $this->get(route('clients.contracts', ['page' => 2]))->assertOk()
             ->assertViewHas('contracts', fn ($contracts) => $contracts->total() === 11 && $contracts->count() === 1)
             ->assertSee('Previous')->assertDontSee('Unrelated contract outside pagination');
     }

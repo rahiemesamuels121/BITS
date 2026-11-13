@@ -1,0 +1,89 @@
+/* BITS brand colors, with darker text shades for readable contrast. */
+.admin-body:is(.admin-portal, .client-portal) {
+    --admin-ink: #102f34;
+    --admin-muted: #536e73;
+    --admin-line: #d7e7e8;
+    --admin-accent: #007780;
+    background: #f1f7f7;
+}
+
+.admin-body:is(.admin-portal, .client-portal) .admin-sidebar { background: #062f35; border-right-color: #14515a; }
+.admin-body:is(.admin-portal, .client-portal) .admin-brand .brand-dot { color: var(--bits-orange); }
+.admin-body:is(.admin-portal, .client-portal) .admin-workspace { background: #0c4148; border-color: #24616a; }
+.admin-body:is(.admin-portal, .client-portal) .admin-workspace-mark { background: #ffffff; }
+.admin-body:is(.admin-portal, .client-portal) .admin-workspace div > span,
+.admin-body:is(.admin-portal, .client-portal) .admin-nav-caption { color: #a3cfd3; }
+.admin-body:is(.admin-portal, .client-portal) .admin-nav > a { color: #c4dfe1; }
+.admin-body:is(.admin-portal, .client-portal) .admin-nav > a:hover { background: #124b53; color: #fff; }
+.admin-body:is(.admin-portal, .client-portal) .admin-nav > a.is-active {
+    color: #fff;
+    background: #08616a;
+    border-color: #23828b;
+    box-shadow: inset 3px 0 var(--bits-orange);
+}
+.admin-body:is(.admin-portal, .client-portal) .admin-nav > a.is-active .admin-icon { color: var(--bits-cyan); }
+.admin-body:is(.admin-portal, .client-portal) .admin-demo-card { background: #0c4148; border-color: #24616a; border-top: 3px solid var(--bits-orange); }
+.admin-body:is(.admin-portal, .client-portal) .admin-demo-card > .admin-icon { color: var(--bits-cyan); }
+.admin-body:is(.admin-portal, .client-portal) .admin-demo-card p,
+.admin-body:is(.admin-portal, .client-portal) .admin-website-link { color: #bfdadd; }
+.admin-body:is(.admin-portal, .client-portal) .admin-demo-card > span { color: #88e5ef; }
+.admin-body:is(.admin-portal, .client-portal) .admin-topbar { border-bottom: 3px solid var(--bits-teal); background: #fff; }
+.admin-body:is(.admin-portal, .client-portal) .admin-profile > span { background: #dbf6fa; color: #075762; border: 1px solid #a3e0e6; }
+.admin-body:is(.admin-portal, .client-portal) .admin-eyebrow { color: #007780; }
+
+.admin-body:is(.admin-portal, .client-portal) .admin-button-primary {
+    color: #241500;
+    background: var(--bits-orange);
+    border-color: var(--bits-orange);
+    box-shadow: 0 3px 9px #fe750126;
+    font-weight: 600;
+}
+.admin-body:is(.admin-portal, .client-portal) .admin-button-primary:hover { color: #241500; background: #ff9238; border-color: #d96000; }
+.admin-body:is(.admin-portal, .client-portal) .admin-button:not(.admin-button-primary):not(.fm-danger):hover { background: #e5f7f8; border-color: #58b9c0; color: #075b63; }
+.admin-body:is(.admin-portal, .client-portal) :is(a, button, input, select, textarea):focus-visible { outline: 3px solid #007780; outline-offset: 3px; }
+.admin-body:is(.admin-portal, .client-portal) .admin-sidebar :is(a, button):focus-visible { outline-color: var(--bits-cyan); }
+
+.admin-body:is(.admin-portal, .client-portal) .premium-stat { border-top: 4px solid var(--bits-teal); }
+.admin-body:is(.admin-portal, .client-portal) .premium-stat-active { background: #e5f7f5; border-color: #b4e4df; border-top-color: var(--bits-teal); }
+.admin-body:is(.admin-portal, .client-portal) .premium-stat-inactive { background: #fff1e4; border-color: #f4cfac; border-top-color: var(--bits-orange); }
+.admin-body:is(.admin-portal, .client-portal) .premium-stat-published { background: #e1f8fe; border-color: #afe6f2; border-top-color: var(--bits-cyan); }
+.admin-body:is(.admin-portal, .client-portal) .premium-stat-active .admin-stat-icon { background: #007780; color: #fff; border-color: #007780; }
+.admin-body:is(.admin-portal, .client-portal) .premium-stat-inactive .admin-stat-icon { background: var(--bits-orange); color: #241500; border-color: var(--bits-orange); }
+.admin-body:is(.admin-portal, .client-portal) .premium-stat-published .admin-stat-icon { background: var(--bits-cyan); color: #073e49; border-color: #00b6d9; }
+.admin-body:is(.admin-portal, .client-portal) .premium-stat > strong { color: #103c42; }
+.admin-body:is(.admin-portal, .client-portal) .premium-stat > div > span:first-child,
+.admin-body:is(.admin-portal, .client-portal) .premium-stat > p { color: #415f64; }
+.admin-body:is(.admin-portal, .client-portal) .premium-stat-inactive > strong { color: #833c00; }
+
+.admin-body:is(.admin-portal, .client-portal) .chart-tone-active { --chart-color: var(--bits-teal); }
+.admin-body:is(.admin-portal, .client-portal) .chart-tone-inactive { --chart-color: var(--bits-orange); }
+.admin-body:is(.admin-portal, .client-portal) .chart-tone-published { --chart-color: var(--bits-cyan); }
+.admin-body:is(.admin-portal, .client-portal) .chart-tone-draft { --chart-color: var(--bits-orange); }
+.admin-body:is(.admin-portal, .client-portal) .chart-tone-archived { --chart-color: #526f75; }
+.admin-body:is(.admin-portal, .client-portal) .premium-dashboard-comparisons .dashboard-comparison > .admin-card-heading { background: #f0f9f9; border-bottom: 1px solid #d7e7e8; }
+.admin-body:is(.admin-portal, .client-portal) .premium-dashboard-live > span { background: #007780; box-shadow: 0 0 0 4px #02aeb91a; }
+.admin-body:is(.admin-portal, .client-portal) .premium-dashboard-record-card > .admin-card-heading { background: #eaf7f6; border-top: 3px solid var(--bits-teal); }
+.admin-body:is(.admin-portal, .client-portal) .premium-dashboard-record-card + .premium-dashboard-record-card > .admin-card-heading { background: #eafaff; border-top-color: var(--bits-cyan); }
+.admin-body:is(.admin-portal, .client-portal) .premium-record-icon { background: #007780; color: #fff; border-color: #007780; }
+.admin-body:is(.admin-portal, .client-portal) .premium-dashboard-record-card + .premium-dashboard-record-card .premium-record-icon { background: var(--bits-cyan); color: #073e49; border-color: #00b6d9; }
+
+.admin-body:is(.admin-portal, .client-portal) .fm-filters { background: #eaf7f7; border-color: #bcdddf; }
+.admin-body:is(.admin-portal, .client-portal) .clients-table thead th,
+.admin-body:is(.admin-portal, .client-portal) .admin-table thead th,
+.admin-body:is(.admin-portal, .client-portal) .premium-dashboard-record-card .admin-table thead th { background: #103f47; color: #e6fafb; border-bottom-color: #26636b; }
+.admin-body:is(.admin-portal, .client-portal) .clients-table tbody tr:hover,
+.admin-body:is(.admin-portal, .client-portal) .admin-table tbody tr:hover,
+.admin-body:is(.admin-portal, .client-portal) .premium-dashboard-record-card .admin-table tbody tr:hover { background: #eaf9fa; }
+.admin-body:is(.admin-portal, .client-portal) .fm-form-icon,
+.admin-body:is(.admin-portal, .client-portal) .pm-client-avatar { background: #dff7fb; color: #006976; border-color: #9fdae2; }
+.admin-body:is(.admin-portal, .client-portal) .fm-form-card { border-top: 3px solid var(--bits-teal); }
+.admin-body:is(.admin-portal, .client-portal) .fm-create-card:not(.contract-editor) { border-top: 4px solid var(--bits-orange); }
+.admin-body:is(.admin-portal, .client-portal) .fm-status-published,
+.admin-body:is(.admin-portal, .client-portal) .admin-status.status-active { background: #d9f3ef; color: #075e55; }
+.admin-body:is(.admin-portal, .client-portal) .fm-status-draft,
+.admin-body:is(.admin-portal, .client-portal) .admin-status:not([class*='status-']) { background: #ffead6; color: #834000; }
+.admin-body:is(.admin-portal, .client-portal) .fm-status-archived { background: #e6edef; color: #405b62; }
+.admin-body:is(.admin-portal, .client-portal) .fm-share-banner { background: #e1f8fe; border-color: #a8dfe9; color: #075e6b; }
+.admin-body:is(.admin-portal, .client-portal) .fm-form-nav a[aria-current] { color: #007780; box-shadow: 0 3px var(--bits-orange); }
+.admin-body:is(.admin-portal, .client-portal) .fb-panel-heading { background: #eaf7f7; border-bottom-color: #bcdddf; }
+.admin-body:is(.admin-portal, .client-portal) .fb-tool > span { background: #dbf5f7; color: #006873; }

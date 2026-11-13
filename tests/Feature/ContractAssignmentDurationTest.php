@@ -178,12 +178,12 @@ class ContractAssignmentDurationTest extends TestCase
             ],
         ])->assertRedirect(route('contracts.index'));
 
-        $this->actingAs($first)->get(route('dashboard'))->assertOk()
+        $this->actingAs($first)->get(route('clients.contracts'))->assertOk()
             ->assertSee('Your assignment')->assertSee('Custom dates')
             ->assertSee('Feb 1, 2027')->assertSee('Mar 31, 2027')
             ->assertSee('Jan 1, 2027')->assertSee('Dec 31, 2027')
             ->assertDontSee('Aug 1, 2027')->assertDontSee('Sep 30, 2027')->assertDontSee($second->email);
-        $this->actingAs($second)->get(route('dashboard'))->assertOk()
+        $this->actingAs($second)->get(route('clients.contracts'))->assertOk()
             ->assertSee('Aug 1, 2027')->assertSee('Sep 30, 2027')
             ->assertDontSee('Feb 1, 2027')->assertDontSee('Mar 31, 2027')->assertDontSee($first->email);
     }

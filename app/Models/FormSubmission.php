@@ -6,9 +6,13 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['form_version_id', 'user_id', 'data', 'submitted_at'])]
+#[Fillable(['form_version_id', 'user_id', 'data', 'submitted_at', 'status'])]
 class FormSubmission extends Model
 {
+    public const STATUSES = ['new' => 'New', 'in_progress' => 'In progress', 'completed' => 'Completed'];
+
+    protected $attributes = ['status' => 'new'];
+
     protected function casts(): array
     {
         return ['data' => 'array', 'submitted_at' => 'datetime'];

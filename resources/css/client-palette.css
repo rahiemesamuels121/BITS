@@ -1,0 +1,63 @@
+/* Client surfaces share the workspace palette and use elevation for grouped content. */
+.admin-body.client-portal {
+    --admin-shadow: 0 8px 24px #063b4310, 0 2px 5px #063b4308;
+    -webkit-font-smoothing: antialiased;
+}
+.admin-body.client-portal .admin-brand .brand-name { color: #fff; }
+.admin-body.client-portal .admin-button { border-color: #bcdbde; color: #075d66; }
+.admin-body.client-portal .admin-button-primary { color: #241500; border-color: var(--bits-orange); }
+.admin-body.client-portal .client-overview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.admin-body.client-portal .client-overview-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px;
+    border-radius: 16px;
+    border-top: 4px solid var(--bits-teal);
+    background: #e5f7f5;
+    box-shadow: var(--admin-shadow);
+    transition: box-shadow 180ms ease, border-color 180ms ease;
+}
+.admin-body.client-portal .client-overview-contracts { background: #fff1e4; border-top-color: var(--bits-orange); }
+.admin-body.client-portal .client-overview-responses { background: #e1f8fe; border-top-color: var(--bits-cyan); }
+.admin-body.client-portal .client-overview-icon { display: grid; place-items: center; width: 46px; height: 46px; margin-bottom: 24px; border-radius: 13px; color: #fff; background: #007780; box-shadow: 0 4px 10px #00778020; }
+.admin-body.client-portal .client-overview-contracts .client-overview-icon { color: #241500; background: var(--bits-orange); }
+.admin-body.client-portal .client-overview-responses .client-overview-icon { color: #073e49; background: var(--bits-cyan); }
+.admin-body.client-portal .client-overview-card h2 { color: #103c42; font-size: 21px; }
+.admin-body.client-portal .client-overview-card p { margin: 14px 0 26px; color: #415f64; font-size: 14px; line-height: 1.8; }
+.admin-body.client-portal .client-overview-card .admin-button { margin-top: auto; white-space: normal; }
+.admin-body.client-portal .client-overview-card:focus-within { box-shadow: 0 12px 30px #063b431c, 0 3px 8px #063b4310; }
+.admin-body.client-portal :is(.client-account-card, .client-contract-card, .client-responses-card, .fm-response-detail) { border-radius: 16px; box-shadow: var(--admin-shadow); }
+.admin-body.client-portal .client-account-card { border-top: 4px solid var(--bits-teal); }
+.admin-body.client-portal .client-account-profile { background: #e5f7f5; border-color: #bcdddf; }
+.admin-body.client-portal .client-account-avatar { color: #fff; background: #007780; border-color: #007780; box-shadow: 0 5px 12px #00778024; }
+.admin-body.client-portal .client-account-details dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
+.admin-body.client-portal .client-account-details dl > div { border-bottom: 1px solid var(--admin-line); }
+.admin-body.client-portal .client-account-details dl > div:nth-last-child(-n+2) { border-bottom: 0; }
+.admin-body.client-portal .client-contract-card { border-top: 4px solid var(--bits-orange); }
+.admin-body.client-portal .client-contract-icon { background: #ffead6; color: #834000; border-color: #f4cfac; }
+.admin-body.client-portal .client-contract-term { background: #eaf7f7; border-color: #c6e4e6; }
+.admin-body.client-portal .client-contract-count { background: #dbf6fa; color: #075762; border-color: #a3e0e6; }
+.admin-body.client-portal .client-responses-card { border-top: 4px solid var(--bits-cyan); }
+.admin-body.client-portal .client-responses-section { margin-top: 26px; }
+.admin-body.client-portal .fm-response-detail { border-top: 4px solid var(--bits-cyan); }
+.admin-body.client-portal .response-status-new { color: #075e6b; background: #dff7fc; }
+.admin-body.client-portal .response-status-in_progress { color: #834000; background: #ffead6; }
+.admin-body.client-portal .response-status-completed { color: #075e55; background: #d9f3ef; }
+
+/* Raise summary and record cards while keeping controls and filter bars quiet. */
+.admin-body.admin-portal :is(.premium-stat, .premium-dashboard-record-card, .dashboard-comparison, .fm-form-card) { box-shadow: 0 7px 22px #063b4310, 0 2px 4px #063b4308; }
+@media (hover: hover) {
+    .admin-body.client-portal .client-overview-card:hover { box-shadow: 0 12px 30px #063b431c, 0 3px 8px #063b4310; }
+}
+@media (max-width: 1000px) {
+    .admin-body.client-portal .client-overview-grid { grid-template-columns: 1fr; gap: 20px; }
+}
+@media (max-width: 560px) {
+    .admin-body.client-portal .client-overview-card { padding: 24px 22px; }
+    .admin-body.client-portal .client-account-details dl { grid-template-columns: 1fr; }
+    .admin-body.client-portal .client-account-details dl > div:nth-last-child(2) { border-bottom: 1px solid var(--admin-line); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .admin-body.client-portal .client-overview-card { transition: none; }
+}

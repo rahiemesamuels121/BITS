@@ -100,12 +100,12 @@ class ClientDashboardResponsesTest extends TestCase
         $this->assertDatabaseCount('form_submissions', 2);
         $this->assertNull($form->submissions()->latest('id')->first()->user_id);
 
-        $this->actingAs($joys)->get(route('dashboard'))->assertOk()
+        $this->actingAs($joys)->get(route('clients.responses.index'))->assertOk()
             ->assertSee('Responses linked to you')->assertSee($form->title)
             ->assertViewHas('responses', fn ($responses) => $responses->total() === 1 && $responses->contains('id', $linked->id))
             ->assertSee(route('clients.responses.show', $linked));
         $this->get(route('clients.responses.show', $linked))->assertOk()->assertSee('John Doe')->assertDontSee('Unlinked respondent');
-        $this->actingAs($other)->get(route('dashboard'))->assertOk()
+        $this->actingAs($other)->get(route('clients.responses.index'))->assertOk()
             ->assertViewHas('responses', fn ($responses) => $responses->total() === 0)
             ->assertSee('No responses linked to you yet.');
         $this->get(route('clients.responses.show', $linked))->assertNotFound();
@@ -128,7 +128,7 @@ class ClientDashboardResponsesTest extends TestCase
         $this->response($form, ['unrelated_number' => $joys->id]);
         $this->response($form, ['preferred_client' => (string) $other->id, 'unrelated_number' => $joys->id]);
 
-        $this->actingAs($joys)->get(route('dashboard'))->assertOk()
+        $this->actingAs($joys)->get(route('clients.responses.index'))->assertOk()
             ->assertViewHas('responses', fn ($responses) => $responses->total() === 2
                 && $responses->contains('id', $string->id) && $responses->contains('id', $integer->id));
     }
@@ -152,7 +152,7 @@ class ClientDashboardResponsesTest extends TestCase
         }
         $deleted->delete();
 
-        $this->actingAs($joys)->get(route('dashboard'))->assertOk()
+        $this->actingAs($joys)->get(route('clients.responses.index'))->assertOk()
             ->assertViewHas('responses', fn ($responses) => $responses->total() === 1 && $responses->contains('id', $visible->id))
             ->assertDontSee('Unassigned private form')->assertDontSee('Other clients private form')->assertDontSee('Removed form');
         foreach ($hidden as $submission) {
@@ -177,7 +177,7 @@ class ClientDashboardResponsesTest extends TestCase
         $secondKey = $this->response($form, ['selected_agency' => (string) $joys->id, 'full_name' => 'Renamed question respondent']);
         $wrongKey = $this->response($form, ['preferred_client' => (string) $joys->id]);
 
-        $this->actingAs($joys)->get(route('dashboard'))->assertOk()
+        $this->actingAs($joys)->get(route('clients.responses.index'))->assertOk()
             ->assertViewHas('responses', fn ($responses) => $responses->total() === 2
                 && $responses->contains('id', $firstKey->id) && $responses->contains('id', $secondKey->id));
         $this->get(route('clients.responses.show', $firstKey))->assertOk()->assertSee('First version respondent');
@@ -195,35 +195,65 @@ class ClientDashboardResponsesTest extends TestCase
         $submission = $this->response($form, ['preferred_client' => (string) $joys->id]);
         $this->actingAs($joys)->get(route('clients.responses.show', $submission))->assertOk();
         $contract->clients()->detach($joys->id);
-        $this->get(route('dashboard'))->assertOk()->assertViewHas('responses', fn ($responses) => $responses->total() === 0);
+        $this->get(route('clients.responses.index'))->assertOk()->assertViewHas('responses', fn ($responses) => $responses->total() === 0);
         $this->get(route('clients.responses.show', $submission))->assertNotFound();
         $contract->clients()->attach($joys->id);
         $this->get(route('clients.responses.show', $submission))->assertOk();
         $contract->update(['form_id' => null]);
-        $this->get(route('dashboard'))->assertOk()->assertViewHas('responses', fn ($responses) => $responses->total() === 0);
+        $this->get(route('clients.responses.index'))->assertOk()->assertViewHas('responses', fn ($responses) => $responses->total() === 0);
         $this->get(route('clients.responses.show', $submission))->assertNotFound();
     }
 
-    public function test_response_and_contract_pagination_are_independent(): void
+    public function test_responses_are_paginated_and_filters_are_preserved(): void
     {
         $owner = $this->account(Role::ADMIN);
-        $joys = $this->account();
-        $form = $this->form($owner, [$joys]);
-        Contract::factory()->for($form, 'form')->hasAttached($joys, [], 'clients')->create();
-        Contract::factory()->count(10)->hasAttached($joys, [], 'clients')->create();
+        $client = $this->account();
+        $form = $this->form($owner, [$client]);
+        Contract::factory()->for($form, 'form')->hasAttached($client, [], 'clients')->create();
         for ($i = 0; $i < 11; $i++) {
-            $this->response($form, ['preferred_client' => (string) $joys->id, 'full_name' => 'Respondent '.$i]);
+            $this->response($form, ['preferred_client' => (string) $client->id]);
         }
-        $this->actingAs($joys)->get(route('dashboard'))->assertOk()
-            ->assertViewHas('contracts', fn ($contracts) => $contracts->count() === 10 && $contracts->currentPage() === 1)
-            ->assertViewHas('responses', fn ($responses) => $responses->total() === 11 && $responses->count() === 10 && $responses->currentPage() === 1)
-            ->assertSee('responses_page=2');
-        $this->get(route('dashboard', ['responses_page' => 2]))->assertOk()
-            ->assertViewHas('contracts', fn ($contracts) => $contracts->currentPage() === 1)
-            ->assertViewHas('responses', fn ($responses) => $responses->count() === 1 && $responses->currentPage() === 2);
-        $this->get(route('dashboard', ['page' => 2]))->assertOk()
-            ->assertViewHas('contracts', fn ($contracts) => $contracts->count() === 1 && $contracts->currentPage() === 2)
-            ->assertViewHas('responses', fn ($responses) => $responses->currentPage() === 1);
+        $completed = $this->response($form, ['preferred_client' => (string) $client->id]);
+        $completed->update(['status' => 'completed', 'submitted_at' => '2026-01-01 12:00:00']);
+        $this->actingAs($client)->get(route('clients.responses.index', ['form' => $form->id]))->assertOk()
+            ->assertViewHas('responses', fn ($items) => $items->total() === 12 && $items->count() === 10)
+            ->assertSee('form='.$form->id)->assertSee('page=2');
+        $this->get(route('clients.responses.index', ['status' => 'new', 'page' => 2]))->assertOk()
+            ->assertViewHas('responses', fn ($items) => $items->count() === 2 && $items->currentPage() === 2);
+        $this->get(route('clients.responses.index', ['status' => 'completed', 'form' => $form->id, 'from' => '2026-01-01', 'to' => '2026-01-01']))->assertOk()
+            ->assertViewHas('responses', fn ($items) => $items->total() === 1 && $items->first()->is($completed));
+        $this->get(route('clients.responses.index', ['from' => '2026-01-02']))->assertOk()
+            ->assertViewHas('responses', fn ($items) => $items->total() === 11);
+        $this->get(route('clients.responses.index', ['to' => '2026-01-01']))->assertOk()
+            ->assertViewHas('responses', fn ($items) => $items->total() === 1);
+        $this->get(route('clients.responses.index', ['form' => 999999]))->assertOk()->assertSee('No responses match your filters.');
+        $this->get(route('clients.responses.index', ['from' => 'invalid']))->assertSessionHasErrors('from');
+    }
+
+    public function test_clients_export_only_their_linked_responses(): void
+    {
+        $owner = $this->account(Role::ADMIN);
+        $client = $this->account();
+        $other = $this->account();
+        $form = $this->form($owner, [$client, $other]);
+        Contract::factory()->for($form, 'form')->hasAttached($client, [], 'clients')->create();
+        $submission = $this->response($form, ['preferred_client' => (string) $client->id, 'full_name' => '=Private answer']);
+        $second = $this->response($form, ['preferred_client' => (string) $client->id, 'full_name' => 'Second response', 'unrelated_number' => 42]);
+        $this->response($form, ['preferred_client' => (string) $other->id, 'full_name' => 'Other private answer']);
+        $download = $this->actingAs($client)->get(route('clients.responses.export'));
+        $download->assertOk()->assertDownload('my-responses.csv');
+        $content = $download->streamedContent();
+        $rows = array_map(fn ($line) => str_getcsv($line, ',', '"', ''), explode("\n", trim(substr($content, 3))));
+        $this->assertCount(3, $rows);
+        $this->assertSame(['Response ID', 'Form', 'Contract', 'Received (UTC)', 'Full name', 'Which client would you like to work with?', 'Unrelated number'], $rows[0]);
+        $this->assertSame((string) $submission->id, $rows[1][0]);
+        $this->assertSame("'=Private answer", $rows[1][4]);
+        $this->assertSame((string) $second->id, $rows[2][0]);
+        $this->assertSame('Second response', $rows[2][4]);
+        $this->assertSame('42', $rows[2][6]);
+        $this->assertStringNotContainsString('Other private answer', $content);
+        $this->assertStringNotContainsString('Status', $content);
+        $this->actingAs($owner)->get(route('clients.responses.export'))->assertNotFound();
     }
 
     public function test_client_attachment_downloads_use_the_same_response_scope_and_hide_storage_paths(): void

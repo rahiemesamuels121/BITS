@@ -2,7 +2,7 @@
     <span>Better flow. Better service.</span>
     <a href="{{ url('/#what-we-do') }}">Explore BITS <span aria-hidden="true">→</span></a>
 </div>
-<header class="top-nav">
+<header class="top-nav{{ request()->is('/') ? ' home-top-nav' : '' }}">
     <a class="brand" href="{{ url('/') }}" aria-label="BITS home">
         @include('partials.brand-mark')
         <span class="brand-name">Business Innovation & Technology Solutions<span class="brand-dot">.</span></span>

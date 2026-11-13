@@ -18,10 +18,8 @@ class DashboardController extends Controller
         if ($account->usesClientDashboard()) {
             return view('clients.dashboard', [
                 'account' => $account,
-                'contracts' => $account->contracts()->with('form.publishedVersion')
-                    ->latest('contracts.created_at')->orderByDesc('contracts.id')->paginate(10)->withQueryString(),
-                'responses' => $responses->query($account)->with(['form.contract', 'version'])
-                    ->latest('submitted_at')->orderByDesc('id')->paginate(10, ['*'], 'responses_page')->withQueryString()->fragment('my-responses'),
+                'contractCount' => $account->contracts()->count(),
+                'responseCount' => $responses->query($account)->count(),
             ]);
         }
 
@@ -49,6 +47,23 @@ class DashboardController extends Controller
             'formStatusCounts' => $formStatusCounts,
             'recentContracts' => (clone $contracts)->latest()->limit(6)->get(),
             'publishedForms' => (clone $forms)->where('status', 'published')->with('user')->latest('updated_at')->limit(6)->get(),
+        ]);
+    }
+
+    public function account(Request $request): View
+    {
+        abort_unless($request->user()->usesClientDashboard(), 404);
+
+        return view('clients.account', ['account' => $request->user()->loadMissing('role')]);
+    }
+
+    public function contracts(Request $request): View
+    {
+        abort_unless($request->user()->usesClientDashboard(), 404);
+
+        return view('clients.contracts', [
+            'contracts' => $request->user()->contracts()->with('form.publishedVersion')
+                ->latest('contracts.created_at')->orderByDesc('contracts.id')->paginate(10)->withQueryString(),
         ]);
     }
 }

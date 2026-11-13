@@ -1,5 +1,5 @@
 import './forms.js';
-import './admin-dashboard.js';
+import './session-security.js';
 import './page-loading.js';
 import './contract-assignments.js';
 
@@ -14,7 +14,7 @@ let revealObserver;
 if ('IntersectionObserver' in window && typeof Element.prototype.animate === 'function') {
     const revealSelector = [
         '.section-heading',
-        '.feature-card',
+        '.feature-card:not(.expertise-card)',
         '.about-symbol',
         '.about-copy',
         '.auth-card',
@@ -75,6 +75,55 @@ if ('IntersectionObserver' in window && typeof Element.prototype.animate === 'fu
         activeReveals.forEach((animation) => animation.cancel());
         activeReveals.clear();
         observeReveals();
+    });
+}
+
+const expertiseGrid = document.querySelector('.expertise-grid');
+
+if (expertiseGrid && 'IntersectionObserver' in window && typeof Element.prototype.animate === 'function') {
+    const expertiseCards = [...expertiseGrid.querySelectorAll('.expertise-card')];
+    let expertiseAnimated = false;
+
+    const expertiseObserver = new IntersectionObserver((entries, observer) => {
+        if (!entries.some((entry) => entry.isIntersecting) || expertiseAnimated || motionPreference.matches) {
+            return;
+        }
+
+        expertiseAnimated = true;
+        observer.disconnect();
+
+        const cardsPerRow = window.matchMedia('(max-width: 760px)').matches ? 1 : 3;
+
+        expertiseCards.forEach((card, index) => {
+            const row = Math.floor(index / cardsPerRow);
+            const positionInRow = index % cardsPerRow;
+            const direction = row % 2 === 0 ? -1 : 1;
+            const animation = card.animate([
+                { opacity: 0, transform: `translate3d(${direction * 70}px, 22px, 0) scale(.985)` },
+                { opacity: 1, transform: 'translate3d(0, 0, 0) scale(1)' },
+            ], {
+                duration: 820,
+                delay: (row * 130) + (positionInRow * 110),
+                easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                fill: 'backwards',
+            });
+
+            activeReveals.add(animation);
+            animation.finished.then(
+                () => activeReveals.delete(animation),
+                () => activeReveals.delete(animation),
+            );
+        });
+    }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
+
+    expertiseObserver.observe(expertiseGrid);
+
+    motionPreference.addEventListener('change', () => {
+        if (motionPreference.matches) {
+            expertiseObserver.disconnect();
+        } else if (!expertiseAnimated) {
+            expertiseObserver.observe(expertiseGrid);
+        }
     });
 }
 

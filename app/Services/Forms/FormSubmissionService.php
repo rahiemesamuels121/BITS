@@ -16,7 +16,7 @@ use Throwable;
 
 class FormSubmissionService
 {
-    public function __construct(private FormValidationService $validation) {}
+    public function __construct(private FormValidationService $validation, private SubmissionAttachmentService $attachments) {}
 
     public function unavailableReason(Form $form): ?string
     {
@@ -89,7 +89,7 @@ class FormSubmissionService
 
     public function delete(FormSubmission $submission): void
     {
-        $files = collect($submission->data)->filter(fn ($value) => is_array($value) && ($value['kind'] ?? null) === 'file' && is_string($value['path'] ?? null) && str_starts_with($value['path'], 'forms/'.$submission->form_id.'/'))->pluck('path')->all();
+        $files = collect($submission->data)->map(fn ($value) => $this->attachments->path($submission, $value))->filter()->unique()->all();
         DB::transaction(fn () => $submission->delete());
         foreach ($files as $path) {
             Storage::disk('local')->delete($path);
